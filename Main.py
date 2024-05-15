@@ -1,5 +1,5 @@
 from sys import argv as sysargv, exit as sysexit
-from PyQt5.QtCore import Qt, QPoint, QCoreApplication
+from PyQt5.QtCore import Qt, QCoreApplication
 from PyQt5.QtWidgets import QApplication
 from core.Win import MainWin
 
