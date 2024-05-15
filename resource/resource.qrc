@@ -1,0 +1,8 @@
+<RCC>
+  <qresource prefix="骨架点">
+    <file>logo.ico</file>
+    <file>骨架点确定方法.png</file>
+    <file>骨架点确定方法.jpg</file>
+    <file>等效弹性弹簧.png</file>
+  </qresource>
+</RCC>

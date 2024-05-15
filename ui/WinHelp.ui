@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>WinHelp</class>
+ <widget class="QWidget" name="WinHelp">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>737</width>
+    <height>813</height>
+   </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>422</width>
+    <height>0</height>
+   </size>
+  </property>
+  <property name="font">
+   <font>
+    <family>微软雅黑</family>
+    <pointsize>10</pointsize>
+   </font>
+  </property>
+  <property name="windowTitle">
+   <string notr="true">帮助文档</string>
+  </property>
+  <property name="windowIcon">
+   <iconset>
+    <normaloff>../logo.ico</normaloff>../logo.ico</iconset>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout" stretch="1,0">
+   <item>
+    <widget class="QScrollArea" name="scrollArea">
+     <property name="verticalScrollBarPolicy">
+      <enum>Qt::ScrollBarAsNeeded</enum>
+     </property>
+     <property name="widgetResizable">
+      <bool>true</bool>
+     </property>
+     <widget class="QWidget" name="scrollAreaWidgetContents">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>717</width>
+        <height>755</height>
+       </rect>
+      </property>
+      <layout class="QHBoxLayout" name="horizontalLayout_2">
+       <item>
+        <widget class="QTextBrowser" name="textBrowser">
+         <property name="font">
+          <font>
+           <family>微软雅黑</family>
+           <pointsize>20</pointsize>
+          </font>
+         </property>
+         <property name="html">
+          <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'微软雅黑','微软雅黑'; font-size:20pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p align=&quot;center&quot; style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:'SimSun'; font-size:9pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;p align=&quot;center&quot; style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:'SimSun'; font-size:26pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;p align=&quot;center&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'SimSun'; font-size:26pt;&quot;&gt;滞回曲线处理软件&lt;/span&gt;&lt;/p&gt;
+&lt;p align=&quot;center&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'SimSun'; font-size:26pt;&quot;&gt;帮助文档&lt;/span&gt;&lt;/p&gt;
+&lt;p align=&quot;center&quot; style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:'SimSun'; font-size:26pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;p align=&quot;justify&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'SimSun'; font-weight:600;&quot;&gt;1 功能介绍&lt;/span&gt;&lt;/p&gt;
+&lt;p align=&quot;justify&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'SimSun'; font-size:10pt; font-weight:600;&quot;&gt; &lt;/span&gt;&lt;/p&gt;
+&lt;p align=&quot;justify&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'SimSun'; font-size:16pt;&quot;&gt;    该程序可用于对滞回曲线进行处理，主要功能包括：删除重复点、识别位移序列的反向点、数据密度扩充、对位移序列进行单调化、曲线平滑、绘制骨架曲线点、计算滞回曲线的耗能指标、滞回曲线分圈。&lt;/span&gt;&lt;/p&gt;
+&lt;p align=&quot;justify&quot; style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:'SimSun'; font-size:16pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;p align=&quot;justify&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'SimSun'; font-weight:600;&quot;&gt;2. 使用方法&lt;/span&gt;&lt;/p&gt;
+&lt;p align=&quot;justify&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'SimSun'; font-weight:600;&quot;&gt;  &lt;/span&gt;&lt;span style=&quot; font-family:'SimSun'; font-size:16pt;&quot;&gt;程序共包括8个窗口，每在一个窗口完成对应的操作后点击右下方的确定按钮，进入下一个窗口，点击返回按钮则返回上一个窗口。&lt;/span&gt;&lt;/p&gt;
+&lt;p align=&quot;justify&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'SimSun'; font-size:10pt; font-weight:600;&quot;&gt; &lt;/span&gt;&lt;/p&gt;
+&lt;p align=&quot;justify&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'SimSun'; font-size:16pt; font-weight:600;&quot;&gt;（1）导入数据&lt;/span&gt;&lt;/p&gt;
+&lt;p align=&quot;justify&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'SimSun'; font-size:16pt;&quot;&gt;    程序通过导入.txt文件来读取待处理的滞回曲线数据，支持单独导入和合并导入。若选择单独导入，位移或力数据应单独一列存放在.txt文件中，若选择合并导入，则.txt文件应包含两列数据，分别对应位移和力，建议直接从excel复制。&lt;/span&gt;&lt;/p&gt;
+&lt;p align=&quot;justify&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'SimSun'; font-size:16pt;&quot;&gt;    对于位移序列，建议通过“反转位移序列”复选框将位移序列的开头部分设置为递增。&lt;/span&gt;&lt;/p&gt;
+&lt;p align=&quot;justify&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'SimSun'; font-size:16pt; font-weight:600;&quot;&gt;（2）删除重复点&lt;/span&gt;&lt;/p&gt;
+&lt;p align=&quot;justify&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'SimSun'; font-size:16pt;&quot;&gt;    若在试验加载过程中有停顿，则滞回曲线会产生大量重复点，程序可通过位移序列判断位移重复点并删除，减小数据量。&lt;/span&gt;&lt;/p&gt;
+&lt;p align=&quot;justify&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'SimSun'; font-size:16pt; font-weight:600;&quot;&gt;（3）识别位移反向点&lt;/span&gt;&lt;/p&gt;
+&lt;p align=&quot;justify&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'SimSun'; font-size:16pt;&quot;&gt;    位移反向点指加载过程中每一圈滞回环位移达到最大值或最小值的点，识别位移的反向点是进行后续处理的前提，程序通过自适应滑动窗口来识别位移反向点，用户可拖动两个滑块来调整起始和终止滑动窗口的宽度，直至图中所标识出的反向点全部识别正确为止，若拖动滑块仍无法正确识别反向点，可手动删除。根据反向点的实时识别情况，用户可根据以下方法来调整滑块位置：若位移序列前半部分的反向点有遗漏，可减小起始宽度；若位移序列前半部分的反向点有多余，可增大起始宽度；若位移序列后半部分的反向点有遗漏，可减小终止宽度；若位移序列后半部分的反向点有多余，可增大终止宽度。&lt;/span&gt;&lt;/p&gt;
+&lt;p align=&quot;justify&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'SimSun'; font-size:16pt;&quot;&gt;    注：应保证所有的位移反向点均识别正确才进行下一步操作，否则后续步骤的处理结果可能会有误。&lt;/span&gt;&lt;/p&gt;
+&lt;p align=&quot;justify&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'SimSun'; font-size:16pt; font-weight:600;&quot;&gt;（4）数据密度扩充&amp;amp;单调化&lt;/span&gt;&lt;/p&gt;
+&lt;p align=&quot;justify&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'SimSun'; font-size:16pt;&quot;&gt;    滞回曲线可能会由于加载或测量装置的误差而产生局部的小幅卸载-再加载现象，如果作为位移时程用于有限元计算时输入，则可能会导致一些不必要的问题。因此，程序会基于第（3）步所识别的位移反向点结果自动对曲线进行单调化处理，即对于相邻两个反向点之间的数据，位移序列只允许单调递增或递减，不满足的数据点将被删除。&lt;/span&gt;&lt;/p&gt;
+&lt;p align=&quot;justify&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'SimSun'; font-size:16pt;&quot;&gt;    此外，用户可指定最小位移增量值，当滞回曲线中每两个相邻点的位移差大于该值时，程序会自动在该两点间做线性差值，使数据满足最小密度要求。&lt;/span&gt;&lt;/p&gt;
+&lt;p align=&quot;justify&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'SimSun'; font-size:16pt; font-weight:600;&quot;&gt;（5）曲线平滑&lt;/span&gt;&lt;/p&gt;
+&lt;p align=&quot;justify&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'SimSun'; font-size:16pt;&quot;&gt;    程序可以采用简单移动窗口平均算法对滞回曲线的力序列进行平滑，若用户选择进行曲线平滑，可输入窗口的宽度值，并查看平滑前后的力序列曲线对比。&lt;/span&gt;&lt;/p&gt;
+&lt;p align=&quot;justify&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'SimSun'; font-size:16pt; font-weight:600;&quot;&gt;（6）骨架点及耗能指标&lt;/span&gt;&lt;/p&gt;
+&lt;p align=&quot;justify&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'SimSun'; font-size:16pt;&quot;&gt;    程序会自动提取骨架点及计算滞回曲线的耗能特征，包括单圈耗能、累积耗能和等效黏滞阻尼系数。其中骨架点的确定方法包括最大位移和最大力（如图1），即采用每一圈滞回环的最大位移或最大力所对应的数据点作为骨架点（注：骨架点不等于骨架曲线，骨架曲线需要根据指定滞回圈数来确定，见第（7）条）。若构件破坏而导致最后一圈滞回环存在明显的退化现象，用户可选择不考虑最后一圈滞回环。此外，在计算等效黏滞阻尼系数时，等效弹性弹簧的刚度可根据该圈滞回环上的最大力所在点、最大位移所在点、或最大位移-最大力点来确定（如图2）。&lt;/span&gt;&lt;/p&gt;
+&lt;p align=&quot;center&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;img src=&quot;:/骨架点/骨架点确定方法.png&quot; /&gt;&lt;/p&gt;
+&lt;p align=&quot;center&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'SimSun'; font-size:16pt;&quot;&gt;图1 骨架点的确定方法&lt;/span&gt;&lt;/p&gt;
+&lt;p align=&quot;center&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;            &lt;img src=&quot;:/骨架点/等效弹性弹簧.png&quot; /&gt;&lt;/p&gt;
+&lt;p align=&quot;center&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'SimSun'; font-size:16pt;&quot;&gt;图2 等效弹性弹簧的确定方法&lt;/span&gt;&lt;/p&gt;
+&lt;p align=&quot;justify&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'SimSun'; font-size:16pt; font-weight:600;&quot;&gt;（7）骨架曲线&amp;amp;退化曲线&lt;/span&gt;&lt;/p&gt;
+&lt;p align=&quot;justify&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'SimSun'; font-size:16pt; font-weight:600;&quot;&gt;    &lt;/span&gt;&lt;span style=&quot; font-family:'SimSun'; font-size:16pt;&quot;&gt;为了在滞回曲线中提取骨架曲线，用户需首先指定用于提取骨架曲线的滞回圈数，程序提供几种默认的滞回圈数方案（即常用方案），如采用第1圈、第4圈、第7圈的滞回环来提取骨架曲线（对应于常用方案(1)），如常用方案仍无法正确满足用于需求，可手动输入滞回圈数（即手动指定），用户手动输入用于提取骨架曲线的滞回圈数，并以空格间隔即可。&lt;/span&gt;&lt;/p&gt;
+&lt;p align=&quot;justify&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'SimSun'; font-size:16pt;&quot;&gt;    在确定滞回圈数后，需点击“添加到方案”按钮，程序才会记录该方案。&lt;/span&gt;&lt;/p&gt;
+&lt;p align=&quot;justify&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'SimSun'; font-size:16pt; font-weight:600;&quot;&gt;（8）查看各圈滞回环&lt;/span&gt;&lt;/p&gt;
+&lt;p align=&quot;justify&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'SimSun'; font-size:16pt;&quot;&gt;    用户可查看各圈滞回环对应的滞回曲线，以及各圈滞回环的统计指标。&lt;/span&gt;&lt;/p&gt;
+&lt;p align=&quot;justify&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'SimSun'; font-size:16pt; font-weight:600;&quot;&gt;（9）结果输出&lt;/span&gt;&lt;/p&gt;
+&lt;p align=&quot;justify&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'SimSun'; font-size:16pt;&quot;&gt;    用户可查看并导出滞回曲线的处理及分析结果数据，数据将汇总于“数据汇总.xlxs”中，并单独生成几个.txt文件以存放各类数据。&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </widget>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout">
+     <item>
+      <spacer name="horizontalSpacer">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QPushButton" name="pushButton">
+       <property name="minimumSize">
+        <size>
+         <width>100</width>
+         <height>30</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>100</width>
+         <height>30</height>
+        </size>
+       </property>
+       <property name="layoutDirection">
+        <enum>Qt::LeftToRight</enum>
+       </property>
+       <property name="text">
+        <string>确认</string>
+       </property>
+       <property name="autoDefault">
+        <bool>false</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer name="horizontalSpacer_2">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <resources>
+  <include location="../resource/resource.qrc"/>
+ </resources>
+ <connections>
+  <connection>
+   <sender>pushButton</sender>
+   <signal>clicked()</signal>
+   <receiver>WinHelp</receiver>
+   <slot>close()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>297</x>
+     <y>696</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1</x>
+     <y>590</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>
