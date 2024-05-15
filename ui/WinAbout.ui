@@ -35,7 +35,7 @@
    <string>关于</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="../resource/resource.qrc">
+   <iconset>
     <normaloff>:/骨架点/logo.ico</normaloff>:/骨架点/logo.ico</iconset>
   </property>
   <property name="modal">
@@ -78,7 +78,7 @@
        <string/>
       </property>
       <property name="pixmap">
-       <pixmap>../logo.png</pixmap>
+       <pixmap>../resource_rc/logo.png</pixmap>
       </property>
       <property name="scaledContents">
        <bool>true</bool>
@@ -144,9 +144,7 @@
    </item>
   </layout>
  </widget>
- <resources>
-  <include location="../resource/resource.qrc"/>
- </resources>
+ <resources/>
  <connections>
   <connection>
    <sender>pushButton</sender>

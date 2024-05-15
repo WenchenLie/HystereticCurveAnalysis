@@ -21,7 +21,6 @@ from ui.MainWin import Ui_MainWindow
 from ui.WinData import Ui_WinData
 from ui.WinAbout import Ui_WinAbout
 from ui.WinHelp import Ui_WinHelp
-import resource.resource
 
 
 class MainWin(QMainWindow):
@@ -39,6 +38,7 @@ class MainWin(QMainWindow):
         self.init_ui()
 
     def init_pg(self):
+        """初始化画图设置"""
         self.pen1 = pg.mkPen(color=(68, 114, 196), width=2)  # matplotlib蓝色:30, 120, 180
         self.pen2 = pg.mkPen(color='orange', width=2)  # 橙色
         self.pen3 = pg.mkPen(color='green', width=2)  # 绿色
@@ -61,7 +61,7 @@ class MainWin(QMainWindow):
         self.ui.radioButton_2.pressed.connect(lambda: self.ui.pushButton_2.setEnabled(False))
         self.ui.radioButton_2.pressed.connect(lambda: self.ui.pushButton_3.setEnabled(True))
         self.ui.checkBox_6.clicked.connect(self.reverse_disp)
-        self.ui.pushButton_8.clicked.connect(self.clearData)
+        self.ui.pushButton_8.clicked.connect(self.clear_data)
         self.ui.pushButton.clicked.connect(self.get_disp)
         self.ui.pushButton_2.clicked.connect(self.get_force)
         self.ui.pushButton_3.clicked.connect(self.get_hysteretic)
@@ -177,7 +177,7 @@ class MainWin(QMainWindow):
         self.ui.action_3.triggered.connect(self.show_WinAbout)
     
     def replace_to_pyqtgraph(self, graphicsView, layout, index):
-        # 将graphicsView控件替换为pyqtgrapg
+        """将graphicsView控件替换为pyqtgrapg"""
         layout.removeWidget(graphicsView)
         graphicsView.deleteLater()
         pg_widget = pg.PlotWidget()
@@ -209,7 +209,8 @@ class MainWin(QMainWindow):
         layout.insertWidget(index, pg_widget)
         return pg_widget
 
-    def MyDel(self, *args):
+    @staticmethod
+    def MyDel(*args):
         for arg in args:
             try:
                 exec(f'del {arg}')
@@ -219,7 +220,7 @@ class MainWin(QMainWindow):
     # --------------------------------------------------- tab 1 ---------------------------------------------------
 
     def get_disp(self):
-        # 点击 - 导入位移
+        """点击 - 导入位移"""
         u_file = QFileDialog.getOpenFileName(self, '导入位移', '', '文本文档 (*.txt *.out)')[0]
         u_file_dir = u_file.split('/')[-1]
         if not u_file:
@@ -245,7 +246,7 @@ class MainWin(QMainWindow):
         self.data_statistics()
 
     def get_force(self):
-        # 点击 - 导入力
+        """点击 - 导入力"""
         F_file = QFileDialog.getOpenFileName(self, '导入力', '', '文本文档 (*.txt *.out)')[0]
         F_file_dir = F_file.split('/')[-1]
         if not F_file:
@@ -266,7 +267,7 @@ class MainWin(QMainWindow):
         self.data_statistics()
 
     def get_hysteretic(self):
-        # 点击 - 导入滞回曲线
+        """点击 - 导入滞回曲线"""
         uF_file = QFileDialog.getOpenFileName(self, '导入滞回曲线', '', '文本文档 (*.txt *.out)')[0]
         uF_file_dir = uF_file.split('/')[-1]
         if not uF_file:
@@ -295,13 +296,13 @@ class MainWin(QMainWindow):
         self.data_statistics()
 
     def plot_protocal(self, pg_i, x, y):
-        # 绘制加载制度
+        """绘制加载制度"""
         pg_i.clear()
         pg_i.plot(x, y, pen=self.pen1, antialias=MainWin.pg_antialias)
         pg_i.autoRange()
 
     def MainWin_plot(self):
-        # 绘制曲线，初步统计
+        """绘制曲线，初步统计"""
         if all([MainWin.u_import, MainWin.F_import]):
             try:
                 self.pg1.clear()
@@ -321,7 +322,8 @@ class MainWin(QMainWindow):
             self.plot_protocal(self.pg2, np.arange(0, len(MainWin.u1), 1), MainWin.u1)
             self.MainWin_plot()
 
-    def clearData(self):
+    def clear_data(self):
+        """清除所有数据"""
         MainWin.u1, MainWin.F1 = None, None
         MainWin.u_import, MainWin.F_import = None, None
         MainWin.ok1 = False
@@ -369,7 +371,7 @@ class MainWin(QMainWindow):
         self.delete_duplicate_point()
 
     def plot2_old(self):
-        # 绘制旧加载制度
+        """绘制旧加载制度"""
         if MainWin.ok1:
             self.pg3.clear()
             self.pg3.plot(np.arange(0, len(MainWin.u1), 1), MainWin.u1, pen=self.pen1)
@@ -378,6 +380,7 @@ class MainWin(QMainWindow):
             self.pg4.clear()
 
     def delete_duplicate_point(self):
+        """删除重复点"""
         if MainWin.ok1:
             self.u2_temp, self.F2_temp = np.array([MainWin.u1[0]]), np.array([MainWin.F1[0]])
             if not (self.u2_temp[0] == 0 and self.F2_temp[0] == 0):
@@ -430,7 +433,7 @@ class MainWin(QMainWindow):
         self.plot_turning_points()
 
     def set_slider_limit_1(self):
-        # 设置起始宽度滑条上限
+        """设置起始宽度滑条上限"""
         limit1 = self.ui.lineEdit_9.text()
         if int(limit1) < 2:
             self.ui.lineEdit_9.setText('2')
@@ -441,7 +444,7 @@ class MainWin(QMainWindow):
         self.ui.lineEdit_10.setText(str(self.ui.horizontalSlider.value()))
 
     def set_slider_limit_2(self):
-        # 设置终止宽度滑条上限
+        """设置终止宽度滑条上限"""
         limit2 = self.ui.lineEdit_8.text()
         if int(limit2) < 3:
             self.ui.lineEdit_8.setText('2')

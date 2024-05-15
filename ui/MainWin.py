@@ -1367,7 +1367,7 @@ class Ui_MainWindow(object):
         self.action.setText(_translate("MainWindow", "退出"))
         self.action_2.setText(_translate("MainWindow", "帮助文档"))
         self.action_3.setText(_translate("MainWindow", "关于"))
-
+import resource_rc
 
 
 if __name__ == "__main__":

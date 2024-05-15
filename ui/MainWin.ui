@@ -26,7 +26,7 @@
    <string>滞回曲线处理软件Version</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="../resource/resource.qrc">
+   <iconset>
     <normaloff>:/骨架点/logo.ico</normaloff>:/骨架点/logo.ico</iconset>
   </property>
   <widget class="QWidget" name="centralwidget">
@@ -2999,7 +2999,7 @@
   </action>
  </widget>
  <resources>
-  <include location="../resource/resource.qrc"/>
+  <include location="../resource_rc/resource.qrc"/>
  </resources>
  <connections>
   <connection>

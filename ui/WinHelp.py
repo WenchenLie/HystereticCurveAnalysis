@@ -58,7 +58,6 @@ class Ui_WinHelp(object):
         spacerItem1 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.horizontalLayout.addItem(spacerItem1)
         self.verticalLayout.addLayout(self.horizontalLayout)
-        self.verticalLayout.setStretch(0, 1)
 
         self.retranslateUi(WinHelp)
         self.pushButton.clicked.connect(WinHelp.close) # type: ignore
@@ -97,9 +96,9 @@ class Ui_WinHelp(object):
 "<p align=\"justify\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-family:\'SimSun\'; font-size:16pt;\">    程序可以采用简单移动窗口平均算法对滞回曲线的力序列进行平滑，若用户选择进行曲线平滑，可输入窗口的宽度值，并查看平滑前后的力序列曲线对比。</span></p>\n"
 "<p align=\"justify\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-family:\'SimSun\'; font-size:16pt; font-weight:600;\">（6）骨架点及耗能指标</span></p>\n"
 "<p align=\"justify\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-family:\'SimSun\'; font-size:16pt;\">    程序会自动提取骨架点及计算滞回曲线的耗能特征，包括单圈耗能、累积耗能和等效黏滞阻尼系数。其中骨架点的确定方法包括最大位移和最大力（如图1），即采用每一圈滞回环的最大位移或最大力所对应的数据点作为骨架点（注：骨架点不等于骨架曲线，骨架曲线需要根据指定滞回圈数来确定，见第（7）条）。若构件破坏而导致最后一圈滞回环存在明显的退化现象，用户可选择不考虑最后一圈滞回环。此外，在计算等效黏滞阻尼系数时，等效弹性弹簧的刚度可根据该圈滞回环上的最大力所在点、最大位移所在点、或最大位移-最大力点来确定（如图2）。</span></p>\n"
-"<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><img src=\":/骨架点/骨架点确定方法.png\" /></p>\n"
+"<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><img src=\":/资源/骨架点确定方法.png\" /></p>\n"
 "<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-family:\'SimSun\'; font-size:16pt;\">图1 骨架点的确定方法</span></p>\n"
-"<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">            <img src=\":/骨架点/等效弹性弹簧.png\" /></p>\n"
+"<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">            <img src=\":/资源/等效弹性弹簧.png\" /></p>\n"
 "<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-family:\'SimSun\'; font-size:16pt;\">图2 等效弹性弹簧的确定方法</span></p>\n"
 "<p align=\"justify\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-family:\'SimSun\'; font-size:16pt; font-weight:600;\">（7）骨架曲线&amp;退化曲线</span></p>\n"
 "<p align=\"justify\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-family:\'SimSun\'; font-size:16pt; font-weight:600;\">    </span><span style=\" font-family:\'SimSun\'; font-size:16pt;\">为了在滞回曲线中提取骨架曲线，用户需首先指定用于提取骨架曲线的滞回圈数，程序提供几种默认的滞回圈数方案（即常用方案），如采用第1圈、第4圈、第7圈的滞回环来提取骨架曲线（对应于常用方案(1)），如常用方案仍无法正确满足用于需求，可手动输入滞回圈数（即手动指定），用户手动输入用于提取骨架曲线的滞回圈数，并以空格间隔即可。</span></p>\n"
@@ -109,7 +108,7 @@ class Ui_WinHelp(object):
 "<p align=\"justify\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-family:\'SimSun\'; font-size:16pt; font-weight:600;\">（9）结果输出</span></p>\n"
 "<p align=\"justify\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-family:\'SimSun\'; font-size:16pt;\">    用户可查看并导出滞回曲线的处理及分析结果数据，数据将汇总于“数据汇总.xlxs”中，并单独生成几个.txt文件以存放各类数据。</span></p></body></html>"))
         self.pushButton.setText(_translate("WinHelp", "确认"))
-
+import resource_rc
 
 
 if __name__ == "__main__":

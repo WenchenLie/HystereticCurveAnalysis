@@ -42,7 +42,7 @@ class Ui_WinAbout(object):
         self.label.setSizePolicy(sizePolicy)
         self.label.setMinimumSize(QtCore.QSize(80, 80))
         self.label.setText("")
-        self.label.setPixmap(QtGui.QPixmap("f:\\MyProgram\\Software\\HystereticCurveProcess\\ui\\../logo.png"))
+        self.label.setPixmap(QtGui.QPixmap("f:\\MyProgram\\Software\\HystereticCurveProcess\\ui\\../resource_rc/logo.png"))
         self.label.setScaledContents(True)
         self.label.setObjectName("label")
         self.label_3 = QtWidgets.QLabel(self.frame)

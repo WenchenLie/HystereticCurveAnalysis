@@ -1,5 +1,5 @@
 <RCC>
-  <qresource prefix="骨架点">
+  <qresource prefix="资源">
     <file>logo.ico</file>
     <file>骨架点确定方法.png</file>
     <file>骨架点确定方法.jpg</file>
