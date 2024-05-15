@@ -24,8 +24,8 @@ from ui.WinHelp import Ui_WinHelp
 
 
 class MainWin(QMainWindow):
-    Version = 'V2.0'
-    date = '2023.9.12'
+    Version = 'V3.0'
+    date = '2024.5.15'
     u1, u2, u3, u4, u5, u6, u7, u7_1 = None, None, None, None, None, None, None, None
     F1, F2, F3, F4, F5, F6, F7, u7_1 = None, None, None, None, None, None, None, None
     ok1, ok2, ok3, ok4, ok5, ok6, ok7, ok7_1 = False, False, False, False, False, False, False, False
@@ -67,8 +67,6 @@ class MainWin(QMainWindow):
         self.ui.pushButton_3.clicked.connect(self.get_hysteretic)
         self.ui.pushButton_4.clicked.connect(lambda: self.ui.tabWidget.setCurrentIndex(1))
         self.ui.pushButton_4.clicked.connect(self.tab1_finished)
-        # self.ui.pushButton_4.clicked.connect(self.plot2_old)
-        # self.ui.pushButton_4.clicked.connect(self.delete_duplicate_point)
         self.pg1 = self.replace_to_pyqtgraph(self.ui.graphicsView, self.ui.verticalLayout_23, 1)
         self.pg2 = self.replace_to_pyqtgraph(self.ui.graphicsView_2, self.ui.verticalLayout_23, 3)
         for i in range(4):
@@ -77,7 +75,6 @@ class MainWin(QMainWindow):
         self.ui.pushButton_5.clicked.connect(lambda: self.ui.tabWidget.setCurrentIndex(0))
         self.ui.pushButton_6.clicked.connect(lambda: self.ui.tabWidget.setCurrentIndex(2))
         self.ui.pushButton_6.clicked.connect(self.tab2_finished)
-        # self.ui.pushButton_6.clicked.connect(self.plot_turning_points)
         self.ui.checkBox_4.toggled.connect(self.delete_duplicate_point)
         self.pg3 = self.replace_to_pyqtgraph(self.ui.graphicsView_3, self.ui.verticalLayout_5, 1)
         self.pg4 = self.replace_to_pyqtgraph(self.ui.graphicsView_4, self.ui.verticalLayout_5, 3)
@@ -87,7 +84,6 @@ class MainWin(QMainWindow):
         self.ui.pushButton_9.clicked.connect(lambda: self.ui.tabWidget.setCurrentIndex(1))
         self.ui.pushButton_10.clicked.connect(lambda: self.ui.tabWidget.setCurrentIndex(3))
         self.ui.pushButton_10.clicked.connect(self.tab3_finished)
-        # self.ui.pushButton_10.clicked.connect(self.get_len_before_process)
         self.ui.horizontalSlider.valueChanged.connect(self.change_slider_1)
         self.ui.horizontalSlider_2.valueChanged.connect(self.change_slider_2)
         self.ui.lineEdit_9.editingFinished.connect(self.set_slider_limit_1)
@@ -130,6 +126,7 @@ class MainWin(QMainWindow):
         self.ui.radioButton_5.clicked.connect(self.get_loops_and_energy)
         self.ui.radioButton_6.clicked.connect(self.get_loops_and_energy)
         self.ui.radioButton_7.clicked.connect(self.get_loops_and_energy)
+        self.ui.radioButton_10.toggled.connect(self.get_loops_and_energy)
         # tab 7
         self.ui.pushButton_25.clicked.connect(lambda: self.ui.tabWidget.setCurrentIndex(5))
         self.ui.pushButton_26.clicked.connect(lambda: self.ui.tabWidget.setCurrentIndex(7))
@@ -142,7 +139,7 @@ class MainWin(QMainWindow):
         # tab 7_1
         self.ui.pushButton_29.clicked.connect(lambda: self.ui.tabWidget.setCurrentIndex(6))
         self.ui.pushButton_30.clicked.connect(lambda: self.ui.tabWidget.setCurrentIndex(8))
-        self.ui.pushButton_30.clicked.connect(self.tag7_1_finished)
+        self.ui.pushButton_30.clicked.connect(self.tab7_1_finished)
         self.pg13 = self.replace_to_pyqtgraph(self.ui.graphicsView_13, self.ui.verticalLayout_29, 1)
         self.pg14 = self.replace_to_pyqtgraph(self.ui.graphicsView_14, self.ui.verticalLayout_30, 1)
         self.pg15 = self.replace_to_pyqtgraph(self.ui.graphicsView_15, self.ui.verticalLayout_31, 1)
@@ -172,10 +169,36 @@ class MainWin(QMainWindow):
         self.ui.pushButton_24.clicked.connect(self.export_all_data)
         self.pg11 = self.replace_to_pyqtgraph(self.ui.graphicsView_11, self.ui.verticalLayout_16, 2)
         # Menu and statusbar
+        self.current_tab_index = 0  # 当前tab的索引号
+        self.ui.tabWidget.tabBarClicked.connect(self.tab_clicked)
         self.ui.statusbar.showMessage(f'滞回曲线处理软件 {MainWin.Version}')
         self.ui.action_2.triggered.connect(self.show_WinHelp)
         self.ui.action_3.triggered.connect(self.show_WinAbout)
-    
+
+    def tab_clicked(self, index: int):
+        """当tab被点击时"""
+        print(f'tab clicked (index = {index})')
+        if index == 1:
+            self.tab1_finished()
+        if index == 2:
+            self.tab2_finished()
+        if index == 3:
+            self.tab3_finished()
+        if index == 4:
+            self.tab4_finished()
+        if index == 5:
+            self.tab5_finished()
+        if index == 6:
+            self.tab6_finished()
+        if index == 7:
+            self.tab7_finished()
+        if index == 8:
+            self.tab7_1_finished()
+
+    def set_current_tab_index(self):
+        """设置当前的tab索引号"""
+        self.current_tab_index = self.ui.tabWidget.currentIndex()
+
     def replace_to_pyqtgraph(self, graphicsView, layout, index):
         """将graphicsView控件替换为pyqtgrapg"""
         layout.removeWidget(graphicsView)
@@ -684,13 +707,17 @@ class MainWin(QMainWindow):
                 skip = 0
             else:
                 skip = 1
-            self.u_loops, self.F_loops, self.length_with_skip = loops_division(MainWin.u5, MainWin.F5, skip=skip)
+            if self.ui.radioButton_10.isChecked():
+                method = 'a'  # 滞回环分圈方法，a-端点为零位移点，b-端点为反向点
+            else:
+                method = 'b'
+            self.u_loops, self.F_loops, self.length_with_skip = loops_division(MainWin.u5, MainWin.F5, skip=skip, method=method)
             # 提取骨架点
             if self.ui.radioButton_3.isChecked():
-                SkeletonMethod = 1
+                skeleton_method = 1
             if self.ui.radioButton_4.isChecked():
-                SkeletonMethod = 2
-            tag_gujia = get_skeleton(MainWin.u5[: self.length_with_skip], MainWin.F5[: self.length_with_skip], SkeletonMethod)
+                skeleton_method = 2
+            tag_gujia = get_skeleton(MainWin.u5[: self.length_with_skip], MainWin.F5[: self.length_with_skip], skeleton_method)
             self.gujia_u, self.gujia_F = MainWin.u5[tag_gujia], MainWin.F5[tag_gujia]
             # 计算耗能
             if self.ui.radioButton_5.isChecked():
@@ -867,7 +894,7 @@ class MainWin(QMainWindow):
             else:
                 # 用手动方案
                 try:
-                    idx = self.ui.lineEdit_27.text().split()
+                    idx = self.ui.lineEdit_27.text().split(',')
                     idx = [int(i) for i in idx]
                 except:
                     QMessageBox.warning(self, '警告', '输入格式有误！')
@@ -994,7 +1021,7 @@ class MainWin(QMainWindow):
             self.pg15.plot(strg_deg_x, strg_deg_y, pen=self.pen1, symbolBrush=(68, 114, 196), symbol='o', symbolSize=10)
             self.pg15.autoRange()
             
-    def tag7_1_finished(self):
+    def tab7_1_finished(self):
         if MainWin.ok7:
             MainWin.ok7_1 = True
             MainWin.u7_1, MainWin.F7_1 = MainWin.u7, MainWin.F7
@@ -1221,7 +1248,7 @@ class MainWin(QMainWindow):
                     ws2.cell(row=5, column=5+7*i, value='当前方案无强度退化')
                     ws2.merge_cells(start_row=5, start_column=5+7*i, end_row=5, end_column=6+7*i)
                 else:
-                    self.write_col_to_excel(ws2, self.data_strength_degradation[i][1], 5, 5+7*i)
+                    self.write_col_to_excel(ws2, self.data_strength_degradation[i][0], 5, 5+7*i)
                     self.write_col_to_excel(ws2, self.data_strength_degradation[i][1], 5, 6+7*i)
             for row in ws2.iter_rows():
                 for cell in row:
@@ -1302,7 +1329,7 @@ class MainWin(QMainWindow):
         self.ui.lineEdit_18.clear()
         self.pg11.clear()    
 
-    # --------------------------------------------------- Meanu ---------------------------------------------------
+    # --------------------------------------------------- Menu ---------------------------------------------------
 
     def show_WinAbout(self):
         self.WinAbout = WinAbout()

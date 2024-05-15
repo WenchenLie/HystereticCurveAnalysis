@@ -1,7 +1,17 @@
 import numpy as np
 
-def data_monotonisation(u, F, tag):
-    # 数据分段，并单调化
+def data_monotonisation(u: np.ndarray, F: np.ndarray, tag: list[int]
+        ) -> tuple[np.ndarray, np.ndarray]:
+    """数据分段，并单调化
+
+    Args:
+        u (np.ndarray): 位移序列
+        F (np.ndarray): 力序列
+        tag (list[int]): 所有反向点的索引号
+
+    Returns:
+        tuple[np.ndarray, np.ndarray]: _description_
+    """
     u_new, F_new = np.array([]), np.array([])
     for i in range(len(tag) - 1):
         tag1, tag2 = tag[i], tag[i + 1]

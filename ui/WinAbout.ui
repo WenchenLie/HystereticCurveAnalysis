@@ -94,7 +94,7 @@
        </rect>
       </property>
       <property name="text">
-       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:14pt; color:#000000;&quot;&gt;Hysteretic curve process&lt;br/&gt;滞回曲线处理软件&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-size:14pt; color:#000000;&quot;&gt;Copyright (c) data&lt;br/&gt;开发者：列文琛&lt;br/&gt;版本：Version&lt;br/&gt;联系邮箱：438171766@qq.com&lt;br/&gt;QQ：438171766&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:14pt; color:#000000;&quot;&gt;Hysteretic Curve Analysis&lt;br/&gt;滞回曲线处理软件&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-size:14pt; color:#000000;&quot;&gt;Copyright (c) data&lt;br/&gt;开发者：列文琛&lt;br/&gt;版本：Version&lt;br/&gt;联系邮箱：438171766@qq.com&lt;br/&gt;QQ：438171766&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
       </property>
      </widget>
     </widget>
