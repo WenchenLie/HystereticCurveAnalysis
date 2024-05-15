@@ -162,5 +162,7 @@ cython_debug/
 test.py
 other/
 tools/
-out/
+dict/
 test_data/
+Pipfile
+Pipfile.lock
