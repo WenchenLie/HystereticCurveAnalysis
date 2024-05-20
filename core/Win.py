@@ -24,8 +24,8 @@ from ui.WinHelp import Ui_WinHelp
 
 
 class MainWin(QMainWindow):
-    Version = 'V3.0'
-    date = '2024.5.15'
+    Version = 'V3.1'
+    date = '2024.5.20'
     u1, u2, u3, u4, u5, u6, u7, u7_1 = None, None, None, None, None, None, None, None
     F1, F2, F3, F4, F5, F6, F7, u7_1 = None, None, None, None, None, None, None, None
     ok1, ok2, ok3, ok4, ok5, ok6, ok7, ok7_1 = False, False, False, False, False, False, False, False
@@ -489,15 +489,17 @@ class MainWin(QMainWindow):
         self.ui.lineEdit_11.setText(str(win2))
         self.ui.horizontalSlider_2.setValue(win2)
 
-    def plot_turning_points(self, delete_points=None):
+    def plot_turning_points(self, delete_points: list[int]=None):
         if MainWin.ok2:
             _, self.tag = get_turning_point(MainWin.u2, self.ui.horizontalSlider.value(), self.ui.horizontalSlider_2.value())
             if delete_points:
                 # 如果有删除点
+                print('绘制位移序列(有删除点)')
                 self.current_tag = np.delete(self.tag, delete_points)
                 self.current_x = np.delete(np.arange(0, len(MainWin.u2), 1)[self.tag], delete_points)  # 删除点后的反向点
                 self.current_y = np.delete(MainWin.u2[self.tag], delete_points)
             else:
+                print('绘制位移序列(无删除点)')
                 self.idx_point_selected = []  # 所选点的索引
                 self.x_point_selected, self.y_point_selected = [], []  # 所选点的坐标
                 self.current_tag = self.tag
@@ -523,12 +525,13 @@ class MainWin(QMainWindow):
             x, y = pos.x(), pos.y()
             index = np.where((np.arange(0, len(MainWin.u2), 1)[self.tag] == x) & (MainWin.u2[self.tag] == y))[0]
             if (len(index) > 0) and (index not in self.idx_point_selected):
-                self.idx_point_selected.append(index)
+                self.idx_point_selected.append(index[0])
                 self.x_point_selected.append(x)
                 self.y_point_selected.append(y)
                 self.line3.addPoints(self.x_point_selected, self.y_point_selected)
 
     def delete_clicked_points(self):
+        print(f'已删点数量: {len(self.idx_point_selected)}')
         self.plot_turning_points(delete_points=self.idx_point_selected)
         
     def reselect_point(self):
