@@ -27,7 +27,7 @@
   </property>
   <property name="windowIcon">
    <iconset>
-    <normaloff>:/骨架点/logo.ico</normaloff>:/骨架点/logo.ico</iconset>
+    <normaloff>logo.ico</normaloff>logo.ico</iconset>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout">
