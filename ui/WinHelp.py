@@ -22,7 +22,7 @@ class Ui_WinHelp(object):
         WinHelp.setFont(font)
         WinHelp.setWindowTitle("帮助文档")
         icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap("f:\\MyProgram\\Software\\HystereticCurveProcess\\ui\\../logo.ico"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon.addPixmap(QtGui.QPixmap("f:\\MyProgram\\Software\\HystereticCurveProcess\\ui\\logo.ico"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         WinHelp.setWindowIcon(icon)
         self.verticalLayout = QtWidgets.QVBoxLayout(WinHelp)
         self.verticalLayout.setObjectName("verticalLayout")

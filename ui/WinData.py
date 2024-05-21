@@ -22,7 +22,7 @@ class Ui_WinData(object):
         font.setPointSize(10)
         WinData.setFont(font)
         icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap("f:\\MyProgram\\Software\\HystereticCurveProcess\\ui\\../logo.ico"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon.addPixmap(QtGui.QPixmap("f:\\MyProgram\\Software\\HystereticCurveProcess\\ui\\logo.ico"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         WinData.setWindowIcon(icon)
         self.verticalLayout = QtWidgets.QVBoxLayout(WinData)
         self.verticalLayout.setObjectName("verticalLayout")
