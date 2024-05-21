@@ -19,7 +19,7 @@ pyqt5
 pyqtgraph
 numpy
 openpyxl
-pyinstaller
+nuitka
 
 更新日志：
 V1.0 2023.09.07：
