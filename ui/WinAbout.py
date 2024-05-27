@@ -40,7 +40,7 @@ class Ui_WinAbout(object):
         sizePolicy.setVerticalStretch(1)
         sizePolicy.setHeightForWidth(self.label.sizePolicy().hasHeightForWidth())
         self.label.setSizePolicy(sizePolicy)
-        self.label.setMinimumSize(QtCore.QSize(80, 80))
+        self.label.setMinimumSize(QtCore.QSize(100, 100))
         self.label.setText("")
         self.label.setPixmap(QtGui.QPixmap(":/资源/logo.png"))
         self.label.setScaledContents(True)
