@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'f:\MyProgram\Software\HystereticCurveProcess\ui\WinHelp.ui'
+# Form implementation generated from reading ui file 'f:\Projects\HystereticCurveProcess\ui\WinHelp.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.9
 #
@@ -22,7 +22,7 @@ class Ui_WinHelp(object):
         WinHelp.setFont(font)
         WinHelp.setWindowTitle("帮助文档")
         icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap("f:\\MyProgram\\Software\\HystereticCurveProcess\\ui\\logo.ico"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon.addPixmap(QtGui.QPixmap(":/资源/logo.ico"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         WinHelp.setWindowIcon(icon)
         self.verticalLayout = QtWidgets.QVBoxLayout(WinHelp)
         self.verticalLayout.setObjectName("verticalLayout")

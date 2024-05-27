@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'f:\MyProgram\Software\HystereticCurveProcess\ui\WinData.ui'
+# Form implementation generated from reading ui file 'f:\Projects\HystereticCurveProcess\ui\WinData.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.9
 #
@@ -22,7 +22,7 @@ class Ui_WinData(object):
         font.setPointSize(10)
         WinData.setFont(font)
         icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap("f:\\MyProgram\\Software\\HystereticCurveProcess\\ui\\logo.ico"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon.addPixmap(QtGui.QPixmap(":/资源/logo.ico"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         WinData.setWindowIcon(icon)
         self.verticalLayout = QtWidgets.QVBoxLayout(WinData)
         self.verticalLayout.setObjectName("verticalLayout")
@@ -77,6 +77,7 @@ class Ui_WinData(object):
         item.setText(_translate("WinData", "力"))
         self.pushButton_2.setText(_translate("WinData", "复制全部"))
         self.pushButton.setText(_translate("WinData", "导出"))
+import resource_rc
 
 
 if __name__ == "__main__":

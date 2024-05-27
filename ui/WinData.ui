@@ -32,8 +32,8 @@
    <string>滞回曲线计算结果</string>
   </property>
   <property name="windowIcon">
-   <iconset>
-    <normaloff>logo.ico</normaloff>logo.ico</iconset>
+   <iconset resource="../resource_rc/resource.qrc">
+    <normaloff>:/资源/logo.ico</normaloff>:/资源/logo.ico</iconset>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
@@ -151,6 +151,8 @@
    </item>
   </layout>
  </widget>
- <resources/>
+ <resources>
+  <include location="../resource_rc/resource.qrc"/>
+ </resources>
  <connections/>
 </ui>

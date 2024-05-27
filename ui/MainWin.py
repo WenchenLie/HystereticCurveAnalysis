@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'f:\MyProgram\Software\HystereticCurveProcess\ui\MainWin.ui'
+# Form implementation generated from reading ui file 'f:\Projects\HystereticCurveProcess\ui\MainWin.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.9
 #
@@ -21,7 +21,7 @@ class Ui_MainWindow(object):
         font.setPointSize(10)
         MainWindow.setFont(font)
         icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap("f:\\MyProgram\\Software\\HystereticCurveProcess\\ui\\logo.ico"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon.addPixmap(QtGui.QPixmap(":/资源/logo.ico"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         MainWindow.setWindowIcon(icon)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")

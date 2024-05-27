@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'f:\MyProgram\Software\HystereticCurveProcess\ui\WinAbout.ui'
+# Form implementation generated from reading ui file 'f:\Projects\HystereticCurveProcess\ui\WinAbout.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.9
 #
@@ -23,7 +23,7 @@ class Ui_WinAbout(object):
         font.setPointSize(10)
         WinAbout.setFont(font)
         icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap("f:\\MyProgram\\Software\\HystereticCurveProcess\\ui\\logo.ico"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon.addPixmap(QtGui.QPixmap(":/资源/logo.ico"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         WinAbout.setWindowIcon(icon)
         WinAbout.setModal(False)
         self.verticalLayout = QtWidgets.QVBoxLayout(WinAbout)
@@ -42,7 +42,7 @@ class Ui_WinAbout(object):
         self.label.setSizePolicy(sizePolicy)
         self.label.setMinimumSize(QtCore.QSize(80, 80))
         self.label.setText("")
-        self.label.setPixmap(QtGui.QPixmap("f:\\MyProgram\\Software\\HystereticCurveProcess\\ui\\../resource_rc/logo.png"))
+        self.label.setPixmap(QtGui.QPixmap(":/资源/logo.png"))
         self.label.setScaledContents(True)
         self.label.setObjectName("label")
         self.label_3 = QtWidgets.QLabel(self.frame)
@@ -72,6 +72,7 @@ class Ui_WinAbout(object):
         WinAbout.setWindowTitle(_translate("WinAbout", "关于"))
         self.label_3.setText(_translate("WinAbout", "<html><head/><body><p><span style=\" font-size:14pt; color:#000000;\">Hysteretic Curve Analysis<br/>滞回曲线处理软件</span></p><p><span style=\" font-size:14pt; color:#000000;\">Copyright (c) data<br/>开发者：列文琛<br/>版本：Version<br/>联系邮箱：438171766@qq.com<br/>QQ：438171766</span></p></body></html>"))
         self.pushButton.setText(_translate("WinAbout", "确认"))
+import resource_rc
 
 
 if __name__ == "__main__":

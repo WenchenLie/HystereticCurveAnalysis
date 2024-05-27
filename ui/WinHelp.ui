@@ -26,8 +26,8 @@
    <string notr="true">帮助文档</string>
   </property>
   <property name="windowIcon">
-   <iconset>
-    <normaloff>logo.ico</normaloff>logo.ico</iconset>
+   <iconset resource="../resource_rc/resource.qrc">
+    <normaloff>:/资源/logo.ico</normaloff>:/资源/logo.ico</iconset>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout" stretch="0,0">
    <item>

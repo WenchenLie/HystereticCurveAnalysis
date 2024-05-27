@@ -26,8 +26,8 @@
    <string>滞回曲线处理软件Version</string>
   </property>
   <property name="windowIcon">
-   <iconset>
-    <normaloff>logo.ico</normaloff>logo.ico</iconset>
+   <iconset resource="../resource_rc/resource.qrc">
+    <normaloff>:/资源/logo.ico</normaloff>:/资源/logo.ico</iconset>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout">

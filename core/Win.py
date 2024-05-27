@@ -24,8 +24,8 @@ from ui.WinHelp import Ui_WinHelp
 
 
 class MainWin(QMainWindow):
-    Version = 'V3.1'
-    date = '2024.5.20'
+    Version = 'V3.2'
+    date = '2024.5.27'
     u1, u2, u3, u4, u5, u6, u7, u7_1 = None, None, None, None, None, None, None, None
     F1, F2, F3, F4, F5, F6, F7, u7_1 = None, None, None, None, None, None, None, None
     ok1, ok2, ok3, ok4, ok5, ok6, ok7, ok7_1 = False, False, False, False, False, False, False, False
