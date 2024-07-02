@@ -70,7 +70,7 @@ class Ui_WinAbout(object):
     def retranslateUi(self, WinAbout):
         _translate = QtCore.QCoreApplication.translate
         WinAbout.setWindowTitle(_translate("WinAbout", "关于"))
-        self.label_3.setText(_translate("WinAbout", "<html><head/><body><p><span style=\" font-size:14pt; color:#000000;\">Hysteretic Curve Analysis<br/>滞回曲线处理软件</span></p><p><span style=\" font-size:14pt; color:#000000;\">Copyright (c) data<br/>开发者：列文琛<br/>版本：Version<br/>联系邮箱：438171766@qq.com<br/>QQ：438171766</span></p></body></html>"))
+        self.label_3.setText(_translate("WinAbout", "<html><head/><body><p><span style=\" font-size:14pt; color:#000000;\">Hysteretic Curve Analysis<br/>滞回曲线处理软件</span></p><p><span style=\" font-size:14pt; color:#000000;\">Copyright (c) data<br/>开发者：列文琛<br/>版本：Version<br/>邮箱：438171766@qq.com<br/>QQ：438171766</span></p></body></html>"))
         self.pushButton.setText(_translate("WinAbout", "确认"))
 import resource_rc
 

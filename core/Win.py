@@ -24,18 +24,21 @@ from ui.WinHelp import Ui_WinHelp
 
 
 class MainWin(QMainWindow):
-    Version = 'V3.2'
-    date = '2024.5.27'
-    u1, u2, u3, u4, u5, u6, u7, u7_1 = None, None, None, None, None, None, None, None
-    F1, F2, F3, F4, F5, F6, F7, u7_1 = None, None, None, None, None, None, None, None
+    Version = 'V4.0'
+    date = '2024.7.3'
+    u1, u2, u3, u4, u5, u6, u7, u7_1 = None, None, None, None, None, None, None, None  # 位移数据
+    F1, F2, F3, F4, F5, F6, F7, u7_1 = None, None, None, None, None, None, None, None  # 力数据
+    d1, d2, d3, d4, d5, d6, d7, d7_1 = None, None, None, None, None, None, None, None  # 附加数据，ndarray，将随位移和力一同处理
     ok1, ok2, ok3, ok4, ok5, ok6, ok7, ok7_1 = False, False, False, False, False, False, False, False
     u_import, F_import = False, False  # 是否存在位移或力数据
+    d_import = False  # 是否存在附加数据
     pg_antialias = False
     
     def __init__(self):
         super().__init__()
         self.init_pg()
         self.init_ui()
+        # self.init_for_test()  # 用于调试程序
 
     def init_pg(self):
         """初始化画图设置"""
@@ -67,6 +70,7 @@ class MainWin(QMainWindow):
         self.ui.pushButton_3.clicked.connect(self.get_hysteretic)
         self.ui.pushButton_4.clicked.connect(lambda: self.ui.tabWidget.setCurrentIndex(1))
         self.ui.pushButton_4.clicked.connect(self.tab1_finished)
+        self.ui.pushButton_36.clicked.connect(self.get_additional_data)
         self.pg1 = self.replace_to_pyqtgraph(self.ui.graphicsView, self.ui.verticalLayout_23, 1)
         self.pg2 = self.replace_to_pyqtgraph(self.ui.graphicsView_2, self.ui.verticalLayout_23, 3)
         for i in range(4):
@@ -121,7 +125,9 @@ class MainWin(QMainWindow):
         self.pg8 = self.replace_to_pyqtgraph(self.ui.graphicsView_8, self.ui.verticalLayout_18, 1)
         self.pg9 = self.replace_to_pyqtgraph(self.ui.graphicsView_9, self.ui.verticalLayout_19, 1)
         self.pg10 = self.replace_to_pyqtgraph(self.ui.graphicsView_10, self.ui.verticalLayout_20, 1)
-        self.ui.radioButton_3.toggled.connect(self.get_loops_and_energy)
+        self.ui.radioButton_3.clicked.connect(self.get_loops_and_energy)
+        self.ui.radioButton_4.clicked.connect(self.get_loops_and_energy)
+        self.ui.radioButton_12.clicked.connect(self.get_loops_and_energy)
         self.ui.checkBox_3.toggled.connect(self.get_loops_and_energy)
         self.ui.radioButton_5.clicked.connect(self.get_loops_and_energy)
         self.ui.radioButton_6.clicked.connect(self.get_loops_and_energy)
@@ -166,6 +172,7 @@ class MainWin(QMainWindow):
         self.ui.pushButton_20.clicked.connect(self.data_Ea)
         self.ui.pushButton_21.clicked.connect(self.data_zeta)
         self.ui.pushButton_22.clicked.connect(self.data_residual_deformation)
+        self.ui.pushButton_35.clicked.connect(self.data_additional_data)
         self.ui.pushButton_24.clicked.connect(self.export_all_data)
         self.pg11 = self.replace_to_pyqtgraph(self.ui.graphicsView_11, self.ui.verticalLayout_16, 2)
         # Menu and statusbar
@@ -174,6 +181,16 @@ class MainWin(QMainWindow):
         self.ui.statusbar.showMessage(f'滞回曲线处理软件 {MainWin.Version}')
         self.ui.action_2.triggered.connect(self.show_WinHelp)
         self.ui.action_3.triggered.connect(self.show_WinAbout)
+
+    def init_for_test(self):
+        """自动导入数据"""
+        data = np.loadtxt('test_data/data_FD.txt')
+        MainWin.u1 = data[:, 0]
+        MainWin.F1 = data[:, 1]
+        MainWin.ok1 = True
+        MainWin.d1 = np.loadtxt('test_data/附加数据.txt', ndmin=2)
+        MainWin.d_import = True
+        print(f'已导入附加数据，{MainWin.d1.shape[0]}行{MainWin.d1.shape[1]}列')
 
     def tab_clicked(self, index: int):
         """当tab被点击时"""
@@ -318,6 +335,33 @@ class MainWin(QMainWindow):
             return 0
         self.data_statistics()
 
+    def get_additional_data(self):
+        """点击 - 导入附加数据"""
+        if not (MainWin.u_import and MainWin.F_import):
+            QMessageBox.warning(self, '错误', '请先导入滞回曲线！')
+            return
+        d_file = QFileDialog.getOpenFileName(self, '导入附加数据', '', '文本文档 (*.txt *.out)')[0]
+        d_file_dir = d_file.split('/')[-1]
+        if not d_file:
+            return 0
+        try:
+            data = np.loadtxt(d_file)
+        except:
+            QMessageBox.warning(self, '警告', '无法导入数据，请检查数据格式！')
+            return 0
+        if len(data) == 0:
+            QMessageBox.warning(self, '警告', '数据为空！')
+            return
+        if MainWin.u_import and len(data) != len(MainWin.u1):
+            QMessageBox.warning(self, '错误', '附加数据与滞回曲线长度不一致！')
+            return
+        if MainWin.F_import and len(data) != len(MainWin.u1):
+            QMessageBox.warning(self, '错误', '附加数据与滞回曲线长度不一致！')
+            return
+        self.ui.label_62.setText(f'附加数据：{d_file_dir}')
+        MainWin.d1 = data
+        MainWin.d_import = True
+
     def plot_protocal(self, pg_i, x, y):
         """绘制加载制度"""
         pg_i.clear()
@@ -347,13 +391,14 @@ class MainWin(QMainWindow):
 
     def clear_data(self):
         """清除所有数据"""
-        MainWin.u1, MainWin.F1 = None, None
-        MainWin.u_import, MainWin.F_import = None, None
+        MainWin.u1, MainWin.F1, MainWin.d1 = None, None, None
+        MainWin.u_import, MainWin.F_import, MainWin.d_import = False, False, False
         MainWin.ok1 = False
         self.pg1.clear()
         self.pg2.clear()
         self.ui.label_13.setText('位移数据：')
         self.ui.label_14.setText('力数据：')
+        self.ui.label_62.setText('附加数据：')
         self.ui.lineEdit.clear()
         self.ui.lineEdit_2.clear()
         self.ui.lineEdit_3.clear()
@@ -378,14 +423,29 @@ class MainWin(QMainWindow):
         if MainWin.u_import:
             self.ui.lineEdit.setText(str(max(MainWin.u1)))
             self.ui.lineEdit_2.setText(str(min(MainWin.u1)))
+            self.init_d()
         if MainWin.F_import:
             self.ui.lineEdit_3.setText(str(max(MainWin.F1)))
             self.ui.lineEdit_4.setText(str(min(MainWin.F1)))
         if all([MainWin.u_import, MainWin.F_import]):
             self.ui.lineEdit_5.setText(str(len(MainWin.u1)))
 
+    def init_d(self):
+        if not MainWin.u_import:
+            return
+        MainWin.d1 = np.zeros(len(MainWin.u1))
+        MainWin.d2 = np.zeros(len(MainWin.u1))
+        MainWin.d3 = np.zeros(len(MainWin.u1))
+        MainWin.d4 = np.zeros(len(MainWin.u1))
+        MainWin.d5 = np.zeros(len(MainWin.u1))
+        MainWin.d6 = np.zeros(len(MainWin.u1))
+        MainWin.d7 = np.zeros(len(MainWin.u1))
+        MainWin.d7_1 = np.zeros(len(MainWin.u1))
+
     def tab1_finished(self):
         self.tab2_start()
+
+    
 
     # --------------------------------------------------- tab 2 ---------------------------------------------------
 
@@ -395,37 +455,42 @@ class MainWin(QMainWindow):
 
     def plot2_old(self):
         """绘制旧加载制度"""
-        if MainWin.ok1:
-            self.pg3.clear()
-            self.pg3.plot(np.arange(0, len(MainWin.u1), 1), MainWin.u1, pen=self.pen1)
-            self.pg3.autoRange()
-            self.ui.lineEdit_6.setText(str(len(MainWin.u1)))
-            self.pg4.clear()
+        if not MainWin.ok1:
+            return
+        self.pg3.clear()
+        self.pg3.plot(np.arange(0, len(MainWin.u1), 1), MainWin.u1, pen=self.pen1)
+        self.pg3.autoRange()
+        self.ui.lineEdit_6.setText(str(len(MainWin.u1)))
+        self.pg4.clear()
 
     def delete_duplicate_point(self):
         """删除重复点"""
-        if MainWin.ok1:
-            self.u2_temp, self.F2_temp = np.array([MainWin.u1[0]]), np.array([MainWin.F1[0]])
-            if not (self.u2_temp[0] == 0 and self.F2_temp[0] == 0):
-                if self.ui.checkBox_4.isChecked():
-                    self.u2_temp, self.F2_temp = np.insert(self.u2_temp, 0, 0),np.insert(self.F2_temp, 0, 0)
-            for i in range(1, len(MainWin.u1)):
-                if MainWin.u1[i] != self.u2_temp[-1]:
-                    self.u2_temp = np.append(self.u2_temp, MainWin.u1[i])
-                    self.F2_temp = np.append(self.F2_temp, MainWin.F1[i])
-            self.pg4.clear()
-            self.pg4.plot(np.arange(0, len(self.u2_temp), 1), self.u2_temp, pen=self.pen1)
-            self.pg4.autoRange()
-            self.ui.lineEdit_7.setText(str(len(self.u2_temp)))
+        if not MainWin.ok1:
+            return
+        self.u2_temp, self.F2_temp, self.d2_temp = np.array([MainWin.u1[0]]), np.array([MainWin.F1[0]]), np.array([MainWin.d1[0]], ndmin=2)
+        if not (self.u2_temp[0] == 0 and self.F2_temp[0] == 0):
+            if self.ui.checkBox_4.isChecked():
+                self.u2_temp, self.F2_temp = np.insert(self.u2_temp, 0, 0), np.insert(self.F2_temp, 0, 0)
+                self.d2_temp = np.insert(self.d2_temp, 0, self.d2_temp[0], 0)
+        for i in range(1, len(MainWin.u1)):
+            if MainWin.u1[i] != self.u2_temp[-1]:
+                self.u2_temp = np.append(self.u2_temp, MainWin.u1[i])
+                self.F2_temp = np.append(self.F2_temp, MainWin.F1[i])
+                self.d2_temp = np.append(self.d2_temp, np.array(MainWin.d1[i], ndmin=2), axis=0)
+        self.pg4.clear()
+        self.pg4.plot(np.arange(0, len(self.u2_temp), 1), self.u2_temp, pen=self.pen1)
+        self.pg4.autoRange()
+        self.ui.lineEdit_7.setText(str(len(self.u2_temp)))
     
     def tab2_finished(self):
-        if MainWin.ok1:
-            MainWin.u2, MainWin.F2 = self.u2_temp, self.F2_temp
-            MainWin.ok2 = True
-            self.tab3_start()
+        if not MainWin.ok1:
+            return
+        MainWin.u2, MainWin.F2, MainWin.d2 = self.u2_temp, self.F2_temp, self.d2_temp
+        MainWin.ok2 = True
+        self.tab3_start()
 
     def clear_tab2(self):
-        MainWin.u2, MainWin.F2 = None, None
+        MainWin.u2, MainWin.F2, MainWin.d2 = None, None, None
         MainWin.ok2 = False
         self.ui.checkBox_4.setChecked(True)
         self.ui.lineEdit_6.clear()
@@ -490,34 +555,35 @@ class MainWin(QMainWindow):
         self.ui.horizontalSlider_2.setValue(win2)
 
     def plot_turning_points(self, delete_points: list[int]=None):
-        if MainWin.ok2:
-            _, self.tag = get_turning_point(MainWin.u2, self.ui.horizontalSlider.value(), self.ui.horizontalSlider_2.value())
-            if delete_points:
-                # 如果有删除点
-                print('绘制位移序列(有删除点)')
-                self.current_tag = np.delete(self.tag, delete_points)
-                self.current_x = np.delete(np.arange(0, len(MainWin.u2), 1)[self.tag], delete_points)  # 删除点后的反向点
-                self.current_y = np.delete(MainWin.u2[self.tag], delete_points)
-            else:
-                print('绘制位移序列(无删除点)')
-                self.idx_point_selected = []  # 所选点的索引
-                self.x_point_selected, self.y_point_selected = [], []  # 所选点的坐标
-                self.current_tag = self.tag
-                self.current_x = np.arange(0, len(MainWin.u2), 1)[self.current_tag]
-                self.current_y = MainWin.u2[self.tag]
-            self.pg5.clear()
-            self.line1 = pg.PlotCurveItem(np.arange(0, len(MainWin.u2), 1), MainWin.u2,  pen=self.pen4)  # 位移序列
-            self.pg5.addItem(self.line1)
-            self.line2 = pg.ScatterPlotItem(size=8, pen=None, brush='red')  # 反向点
-            self.line2.addPoints(self.current_x, self.current_y)
-            self.pg5.addItem(self.line2)
-            pen = pg.mkPen('orange')
-            pen.setWidth(4)
-            self.line3 = pg.ScatterPlotItem(size=17, pen=pen, brush=None)  # 删除点
-            if delete_points:
-                self.line3.addPoints(self.x_point_selected, self.y_point_selected)
-            self.pg5.addItem(self.line3)
-            self.line2.sigClicked.connect(self.point_clicked)
+        if not MainWin.ok2:
+            return
+        _, self.tag = get_turning_point(MainWin.u2, self.ui.horizontalSlider.value(), self.ui.horizontalSlider_2.value())
+        if delete_points:
+            # 如果有删除点
+            print('绘制位移序列(有删除点)')
+            self.current_tag = np.delete(self.tag, delete_points)
+            self.current_x = np.delete(np.arange(0, len(MainWin.u2), 1)[self.tag], delete_points)  # 删除点后的反向点
+            self.current_y = np.delete(MainWin.u2[self.tag], delete_points)
+        else:
+            print('绘制位移序列(无删除点)')
+            self.idx_point_selected = []  # 所选点的索引
+            self.x_point_selected, self.y_point_selected = [], []  # 所选点的坐标
+            self.current_tag = self.tag
+            self.current_x = np.arange(0, len(MainWin.u2), 1)[self.current_tag]
+            self.current_y = MainWin.u2[self.tag]
+        self.pg5.clear()
+        self.line1 = pg.PlotCurveItem(np.arange(0, len(MainWin.u2), 1), MainWin.u2,  pen=self.pen4)  # 位移序列
+        self.pg5.addItem(self.line1)
+        self.line2 = pg.ScatterPlotItem(size=8, pen=None, brush='red')  # 反向点
+        self.line2.addPoints(self.current_x, self.current_y)
+        self.pg5.addItem(self.line2)
+        pen = pg.mkPen('orange')
+        pen.setWidth(4)
+        self.line3 = pg.ScatterPlotItem(size=17, pen=pen, brush=None)  # 删除点
+        if delete_points:
+            self.line3.addPoints(self.x_point_selected, self.y_point_selected)
+        self.pg5.addItem(self.line3)
+        self.line2.sigClicked.connect(self.point_clicked)
 
     def point_clicked(self, plot, points):
         for point in points:
@@ -538,13 +604,14 @@ class MainWin(QMainWindow):
         self.plot_turning_points()
 
     def tab3_finished(self):
-        if MainWin.ok2:
-            MainWin.u3, MainWin.F3 = MainWin.u2, MainWin.F2
-            MainWin.ok3 = True
-            self.tab4_start()
-    
+        if not MainWin.ok2:
+            return
+        MainWin.u3, MainWin.F3, MainWin.d3 = MainWin.u2, MainWin.F2, MainWin.d2
+        MainWin.ok3 = True
+        self.tab4_start()
+
     def clear_tab3(self):
-        MainWin.u3, MainWin.F3 = None, None
+        MainWin.u3, MainWin.F3, MainWin.d3 = None, None, None
         MainWin.ok3 = False
         self.ui.lineEdit_9.setText('200')
         self.ui.lineEdit_8.setText('200')
@@ -583,45 +650,49 @@ class MainWin(QMainWindow):
 
     def get_len_before_process(self):
         # 获取数据处理前长度
-        if MainWin.ok3:
-            self.ui.label_27.setText(f'处理前数据长度：{str(len(MainWin.u3))}')
-            self.data_monotonisation()
+        if not MainWin.ok3:
+            return
+        self.ui.label_27.setText(f'处理前数据长度：{str(len(MainWin.u3))}')
+        self.data_monotonisation()
 
     def data_monotonisation(self):
         # 数据单调化
-        if MainWin.ok3:
-            self.u4_temp, self.F4_temp = data_monotonisation(MainWin.u3, MainWin.F3, self.tag)
-            self.ui.label_29.setText(f'单调化后数据长度：{str(len(self.u4_temp))}')
+        if not MainWin.ok3:
+            return
+        self.u4_temp, self.F4_temp, self.d4_temp = data_monotonisation(MainWin.u3, MainWin.F3, MainWin.d3, self.tag)
+        self.ui.label_29.setText(f'单调化后数据长度：{str(len(self.u4_temp))}')
 
     def data_expansion(self):
         # 进行数据扩充
-        if MainWin.ok3:
-            min_du_str = self.ui.lineEdit_12.text()
-            try:
-                self.min_du = float(min_du_str)
-                if not self.min_du > 0:
-                    self.ui.label_28.setText('扩充后数据长度：')
-                    return 0
-            except:
+        if not MainWin.ok3:
+            return
+        min_du_str = self.ui.lineEdit_12.text()
+        try:
+            self.min_du = float(min_du_str)
+            if not self.min_du > 0:
                 self.ui.label_28.setText('扩充后数据长度：')
                 return 0
-            self.u4_temp_expan, self.F4_temp_expan = data_expansion(self.u4_temp, self.F4_temp, self.min_du)
-            self.ui.label_28.setText(f'扩充后数据长度：{str(len(self.u4_temp_expan))}')
+        except:
+            self.ui.label_28.setText('扩充后数据长度：')
+            return 0
+        self.u4_temp_expan, self.F4_temp_expan, self.d4_temp_expan = data_expansion(self.u4_temp, self.F4_temp, self.d4_temp, self.min_du)
+        self.ui.label_28.setText(f'扩充后数据长度：{str(len(self.u4_temp_expan))}')
 
     def tab4_finished(self):
-        if MainWin.ok3:
-            if self.ui.checkBox.isChecked():
-                MainWin.u4, MainWin.F4 = self.u4_temp_expan, self.F4_temp_expan
-                MainWin.ok4 = True
-                print('tab4 已扩充')
-            else:
-                MainWin.u4, MainWin.F4 = self.u4_temp, self.F4_temp
-                MainWin.ok4 = True
-                print('tab4 不扩充')
-            self.tab5_finished()
+        if not MainWin.ok3:
+            return
+        if self.ui.checkBox.isChecked():
+            MainWin.u4, MainWin.F4, MainWin.d4 = self.u4_temp_expan, self.F4_temp_expan, self.d4_temp_expan
+            MainWin.ok4 = True
+            print('tab4 已扩充')
+        else:
+            MainWin.u4, MainWin.F4, MainWin.d4 = self.u4_temp, self.F4_temp, self.d4_temp
+            MainWin.ok4 = True
+            print('tab4 不扩充')
+        self.tab5_finished()
 
     def clear_tab4(self):
-        MainWin.u4, MainWin.F4 = None, None
+        MainWin.u4, MainWin.F4, MainWin.d4 = None, None, None
         MainWin.ok4 = False
         self.ui.checkBox.setChecked(False)
         self.ui.lineEdit_12.setText('0.2')
@@ -649,49 +720,52 @@ class MainWin(QMainWindow):
             self.clear_plot_smooth()
 
     def curve_smooth(self):
-        if MainWin.ok4:
-            r_window_size = int(self.ui.lineEdit_13.text())
-            if r_window_size < 2:
-                return 0
-            _, self.F5_smooth = smooth(MainWin.u4, MainWin.F4, r_window_size)
-            self.plot_smooth()
+        if not MainWin.ok4:
+            return
+        r_window_size = int(self.ui.lineEdit_13.text())
+        if r_window_size < 2:
+            return 0
+        _, self.F5_smooth = smooth(MainWin.u4, MainWin.F4, r_window_size)
+        self.plot_smooth()
 
     def plot_smooth(self):
-        if MainWin.ok4:
-            self.plot_no_smooth()
-            self.pg6.plot(np.arange(0, len(MainWin.u4), 1), self.F5_smooth, pen=self.pen2, name='after smoothing')
-            self.pg6.autoRange()
+        if not MainWin.ok4:
+            return
+        self.plot_no_smooth()
+        self.pg6.plot(np.arange(0, len(MainWin.u4), 1), self.F5_smooth, pen=self.pen2, name='after smoothing')
+        self.pg6.autoRange()
 
     def plot_no_smooth(self):
-        if MainWin.ok4:
-            self.pg6.clear()
-            self.pg6.addLegend()
-            self.pg6.plot(np.arange(0, len(MainWin.u4), 1), MainWin.F4, pen=self.pen1, name='before smoothing')
-            self.pg6.autoRange()
+        if not MainWin.ok4:
+            return
+        self.pg6.clear()
+        self.pg6.addLegend()
+        self.pg6.plot(np.arange(0, len(MainWin.u4), 1), MainWin.F4, pen=self.pen1, name='before smoothing')
+        self.pg6.autoRange()
 
     def clear_plot_smooth(self):
         self.MyDel('self.F5_smooth')
         self.plot_no_smooth()
 
     def tab5_finished(self):
-        if MainWin.ok4:
-            if self.ui.checkBox_2.isChecked():
-                MainWin.u5, MainWin.F5 = MainWin.u4, self.F5_smooth
-                MainWin.ok5 = True
-                print('tab5 已平滑')
-                self.tab6_start()
-                return 0
-            else:
-                MainWin.u5, MainWin.F5 = MainWin.u4, MainWin.F4
-                MainWin.ok5 = True
-                print('tab5 不平滑')
-                self.tab6_start()
-                return 0
-        else:
+        if not MainWin.ok4:
             print('tab 5不输出数据')
+            return
+        if self.ui.checkBox_2.isChecked():
+            MainWin.u5, MainWin.F5, MainWin.d5 = MainWin.u4, self.F5_smooth, MainWin.d4
+            MainWin.ok5 = True
+            print('tab5 已平滑')
+            self.tab6_start()
+            return 0
+        else:
+            MainWin.u5, MainWin.F5, MainWin.d5 = MainWin.u4, MainWin.F4, MainWin.d4
+            MainWin.ok5 = True
+            print('tab5 不平滑')
+            self.tab6_start()
+            return 0
 
     def clear_tab5(self):
-        MainWin.u5, MainWin.F5 = None, None
+        MainWin.u5, MainWin.F5, MainWin.d5 = None, None, None
         MainWin.ok5 = False
         self.ui.checkBox_2.setChecked(False)
         self.ui.lineEdit_13.setText('5')
@@ -704,67 +778,72 @@ class MainWin(QMainWindow):
         self.get_loops_and_energy()
 
     def get_loops_and_energy(self):
-        if MainWin.ok5:
-            # 分圈
-            if self.ui.checkBox_3.isChecked():
-                skip = 0
-            else:
-                skip = 1
-            if self.ui.radioButton_10.isChecked():
-                method = 'a'  # 滞回环分圈方法，a-端点为零位移点，b-端点为反向点
-            else:
-                method = 'b'
-            self.u_loops, self.F_loops, self.length_with_skip = loops_division(MainWin.u5, MainWin.F5, skip=skip, method=method)
-            # 提取骨架点
-            if self.ui.radioButton_3.isChecked():
-                skeleton_method = 1
-            if self.ui.radioButton_4.isChecked():
-                skeleton_method = 2
-            tag_gujia = get_skeleton(MainWin.u5[: self.length_with_skip], MainWin.F5[: self.length_with_skip], skeleton_method)
-            self.gujia_u, self.gujia_F = MainWin.u5[tag_gujia], MainWin.F5[tag_gujia]
-            # 计算耗能
-            if self.ui.radioButton_5.isChecked():
-                energyMethod = 1
-            if self.ui.radioButton_6.isChecked():
-                energyMethod = 2
-            if self.ui.radioButton_7.isChecked():
-                energyMethod = 3
-            self.Es, self.Ea, self.zeta = get_dissipated_energy(self.u_loops, self.F_loops, EnergyMethod=energyMethod)
-            # 残余变形
-            self.residual_pos, self.residual_neg = [], []
-            for u_loop, F_loop in zip(self.u_loops, self.F_loops):
-                d_pos, d_neg = get_residual_deformation(u_loop, F_loop)
-                self.residual_pos.append(d_pos)
-                self.residual_neg.append(d_neg)
-            # 画图
-            self.plot6()
+        if not MainWin.ok5:
+            return
+        # 分圈
+        if self.ui.checkBox_3.isChecked():
+            skip = 0
+        else:
+            skip = 1
+        if self.ui.radioButton_10.isChecked():
+            method = 'a'  # 滞回环分圈方法，a-端点为零位移点，b-端点为反向点
+        else:
+            method = 'b'
+        self.u_loops, self.F_loops, self.d_loops, self.length_with_skip = loops_division(MainWin.u5, MainWin.F5, MainWin.d5, skip=skip, method=method)
+        # 提取骨架点
+        if self.ui.radioButton_3.isChecked():
+            skeleton_method = 1
+        if self.ui.radioButton_4.isChecked():
+            skeleton_method = 2
+        if self.ui.radioButton_12.isChecked():
+            skeleton_method = 3
+        tag_gujia = get_skeleton(MainWin.u5[: self.length_with_skip], MainWin.F5[: self.length_with_skip], skeleton_method)
+        self.gujia_u, self.gujia_F, self.gujia_d = MainWin.u5[tag_gujia], MainWin.F5[tag_gujia], MainWin.d5[tag_gujia]
+        # 计算耗能
+        if self.ui.radioButton_5.isChecked():
+            energyMethod = 1
+        if self.ui.radioButton_6.isChecked():
+            energyMethod = 2
+        if self.ui.radioButton_7.isChecked():
+            energyMethod = 3
+        self.Es, self.Ea, self.zeta = get_dissipated_energy(self.u_loops, self.F_loops, EnergyMethod=energyMethod)
+        # 残余变形
+        self.residual_pos, self.residual_neg = [], []
+        for u_loop, F_loop in zip(self.u_loops, self.F_loops):
+            d_pos, d_neg = get_residual_deformation(u_loop, F_loop)
+            self.residual_pos.append(d_pos)
+            self.residual_neg.append(d_neg)
+        # 画图
+        self.plot6()
 
     def plot6(self):
-        if MainWin.ok5:
-            self.pg7.clear()
-            self.pg7.plot(MainWin.u5[: self.length_with_skip], MainWin.F5[: self.length_with_skip], pen=self.pen1)
-            self.pg7.plot(self.residual_pos, np.zeros(len(self.residual_pos)), pen=None, symbolBrush='green', symbol='o', symbolSize=10)
-            self.pg7.plot(self.residual_neg, np.zeros(len(self.residual_neg)), pen=None, symbolBrush='green', symbol='o', symbolSize=10)
-            self.pg7.plot(self.gujia_u, self.gujia_F, pen=None, symbolBrush='red', symbol='o', symbolSize=10)
-            self.pg7.autoRange()
-            self.pg8.clear()
-            self.pg8.plot(np.arange(0, len(self.Es), 1), self.Es, pen=self.pen1, symbol='o', symbolBrush=(68, 114, 196), symbolSize=10)
-            self.pg8.autoRange()
-            self.pg9.clear()
-            self.pg9.plot(np.arange(0, len(self.Ea), 1), self.Ea, pen=self.pen1, symbol='o', symbolBrush=(68, 114, 196), symbolSize=10)
-            self.pg9.autoRange()
-            self.pg10.clear()
-            self.pg10.plot(np.arange(0, len(self.zeta), 1), self.zeta, pen=self.pen1, symbol='o', symbolBrush=(68, 114, 196), symbolSize=10)
-            self.pg10.autoRange()
+        if not MainWin.ok5:
+            return
+        self.pg7.clear()
+        self.pg7.plot(MainWin.u5[: self.length_with_skip], MainWin.F5[: self.length_with_skip], pen=self.pen1)
+        self.pg7.plot(self.residual_pos, np.zeros(len(self.residual_pos)), pen=None, symbolBrush='green', symbol='o', symbolSize=10)
+        self.pg7.plot(self.residual_neg, np.zeros(len(self.residual_neg)), pen=None, symbolBrush='green', symbol='o', symbolSize=10)
+        self.pg7.plot(self.gujia_u, self.gujia_F, pen=None, symbolBrush='red', symbol='o', symbolSize=10)
+        self.pg7.autoRange()
+        self.pg8.clear()
+        self.pg8.plot(np.arange(0, len(self.Es), 1), self.Es, pen=self.pen1, symbol='o', symbolBrush=(68, 114, 196), symbolSize=10)
+        self.pg8.autoRange()
+        self.pg9.clear()
+        self.pg9.plot(np.arange(0, len(self.Ea), 1), self.Ea, pen=self.pen1, symbol='o', symbolBrush=(68, 114, 196), symbolSize=10)
+        self.pg9.autoRange()
+        self.pg10.clear()
+        self.pg10.plot(np.arange(0, len(self.zeta), 1), self.zeta, pen=self.pen1, symbol='o', symbolBrush=(68, 114, 196), symbolSize=10)
+        self.pg10.autoRange()
 
     def tab6_finished(self):
-        if MainWin.ok5:
-            MainWin.u6, MainWin.F6 = MainWin.u5[: self.length_with_skip], MainWin.F5[: self.length_with_skip]
-            MainWin.ok6 = True
-            self.tab7_start()
+        if not MainWin.ok5:
+            return
+        MainWin.u6, MainWin.F6, MainWin.d6 = MainWin.u5[: self.length_with_skip], MainWin.F5[: self.length_with_skip], MainWin.d5[: self.length_with_skip]
+        MainWin.ok6 = True
+        self.tab7_start()
 
     def clear_tab6(self):
-        MainWin.u6, MainWin.F6 = None, None
+        MainWin.u6, MainWin.F6, MainWin.d6 = None, None, None
         MainWin.ok6 = False
         self.ui.radioButton_3.setChecked(True)
         self.ui.checkBox_3.setChecked(True)
@@ -784,34 +863,38 @@ class MainWin(QMainWindow):
         self.plot_loop(0)
 
     def setup_comboBox(self):
-        if MainWin.ok6:
-            self.ui.comboBox.addItem('完整滞回曲线')
-            items = np.arange(1, len(self.u_loops) + 1, 1).tolist()
-            items = [f'第{i}圈' for i in items]
-            self.ui.comboBox.addItems(items)
-            self.current_idx = 0  # 当前下拉列表的索引
+        if not MainWin.ok6:
+            return
+        self.ui.comboBox.addItem('完整滞回曲线')
+        items = np.arange(1, len(self.u_loops) + 1, 1).tolist()
+        items = [f'第{i}圈' for i in items]
+        self.ui.comboBox.addItems(items)
+        self.current_idx = 0  # 当前下拉列表的索引
 
     def comboBox_changed(self):
-        if MainWin.ok6:
-            self.current_idx = self.ui.comboBox.currentIndex()  # 获取下拉列表的索引
-            self.current_idx = max(0, self.current_idx)  # self.current_idx会变成-1
-            self.plot_loop(self.current_idx)
+        if not MainWin.ok6:
+            return
+        self.current_idx = self.ui.comboBox.currentIndex()  # 获取下拉列表的索引
+        self.current_idx = max(0, self.current_idx)  # self.current_idx会变成-1
+        self.plot_loop(self.current_idx)
 
     def next_loop(self):
         # 下一圈
-        if MainWin.ok6:
-            self.current_idx += 1
-            if self.current_idx > len(self.u_loops):
-                self.current_idx = 0
-            self.ui.comboBox.setCurrentIndex(self.current_idx)
+        if not MainWin.ok6:
+            return
+        self.current_idx += 1
+        if self.current_idx > len(self.u_loops):
+            self.current_idx = 0
+        self.ui.comboBox.setCurrentIndex(self.current_idx)
 
     def previous_loop(self):
         # 上一圈
-        if MainWin.ok6:
-            self.current_idx -= 1
-            if self.current_idx < 0:
-                self.current_idx = len(self.u_loops)
-            self.ui.comboBox.setCurrentIndex(self.current_idx)
+        if not MainWin.ok6:
+            return
+        self.current_idx -= 1
+        if self.current_idx < 0:
+            self.current_idx = len(self.u_loops)
+        self.ui.comboBox.setCurrentIndex(self.current_idx)
 
     def plot_all_loop(self):
         # 绘制滞回曲线
@@ -819,42 +902,44 @@ class MainWin(QMainWindow):
         self.ui.comboBox.setCurrentIndex(self.current_idx)
 
     def plot_loop(self, idx):
-        if MainWin.ok6:
-            # self.ax12.clear()
-            self.pg12.clear()
-            if idx == 0:
-                current_loop_u, current_loop_F = MainWin.u6, MainWin.F6
-                self.pg12.plot(current_loop_u, current_loop_F, pen=self.pen1)
-                self.pg12.autoRange()
-                self.ui.lineEdit_19.clear()
-                self.ui.lineEdit_20.clear()
-                self.ui.lineEdit_21.clear()
-                self.ui.lineEdit_22.clear()
-                self.ui.lineEdit_23.clear()
-                self.ui.lineEdit_24.clear()
-                self.ui.lineEdit_25.clear()
-                self.ui.lineEdit_26.clear()
-            else:
-                current_loop_u, current_loop_F = self.u_loops[idx - 1], self.F_loops[idx - 1]
-                self.pg12.plot(current_loop_u, current_loop_F, pen=self.pen1)
-                self.pg12.autoRange()
-                self.ui.lineEdit_19.setText(str(round(max(current_loop_u), 5)))
-                self.ui.lineEdit_20.setText(str(round(min(current_loop_u), 5)))
-                self.ui.lineEdit_21.setText(str(round(max(current_loop_F), 5)))
-                self.ui.lineEdit_22.setText(str(round(min(current_loop_F), 5)))
-                self.ui.lineEdit_23.setText(str(len(current_loop_u)))
-                self.ui.lineEdit_24.setText(str(round(self.Es[idx], 2)))  # 三个耗能指标是从0开始的，所以idx不用减1
-                self.ui.lineEdit_25.setText(str(round(self.Ea[idx], 2)))
-                self.ui.lineEdit_26.setText(str(round(self.zeta[idx], 5)))
+        if not MainWin.ok6:
+            return
+        # self.ax12.clear()
+        self.pg12.clear()
+        if idx == 0:
+            current_loop_u, current_loop_F = MainWin.u6, MainWin.F6
+            self.pg12.plot(current_loop_u, current_loop_F, pen=self.pen1)
+            self.pg12.autoRange()
+            self.ui.lineEdit_19.clear()
+            self.ui.lineEdit_20.clear()
+            self.ui.lineEdit_21.clear()
+            self.ui.lineEdit_22.clear()
+            self.ui.lineEdit_23.clear()
+            self.ui.lineEdit_24.clear()
+            self.ui.lineEdit_25.clear()
+            self.ui.lineEdit_26.clear()
+        else:
+            current_loop_u, current_loop_F = self.u_loops[idx - 1], self.F_loops[idx - 1]
+            self.pg12.plot(current_loop_u, current_loop_F, pen=self.pen1)
+            self.pg12.autoRange()
+            self.ui.lineEdit_19.setText(str(round(max(current_loop_u), 5)))
+            self.ui.lineEdit_20.setText(str(round(min(current_loop_u), 5)))
+            self.ui.lineEdit_21.setText(str(round(max(current_loop_F), 5)))
+            self.ui.lineEdit_22.setText(str(round(min(current_loop_F), 5)))
+            self.ui.lineEdit_23.setText(str(len(current_loop_u)))
+            self.ui.lineEdit_24.setText(str(round(self.Es[idx], 2)))  # 三个耗能指标是从0开始的，所以idx不用减1
+            self.ui.lineEdit_25.setText(str(round(self.Ea[idx], 2)))
+            self.ui.lineEdit_26.setText(str(round(self.zeta[idx], 5)))
 
     def tab7_finished(self):
-        if MainWin.ok6:
-            MainWin.ok7 = True
-            MainWin.u7, MainWin.F7 = MainWin.u6, MainWin.F6
-            self.tab7_1_start()
+        if not MainWin.ok6:
+            return
+        MainWin.ok7 = True
+        MainWin.u7, MainWin.F7, MainWin.d7 = MainWin.u6, MainWin.F6, MainWin.d6
+        self.tab7_1_start()
 
     def clear_tab7(self):
-        MainWin.u7, MainWin.F7 = None, None
+        MainWin.u7, MainWin.F7, MainWin.d7 = None, None, None
         MainWin.ok7 = False
         self.ui.comboBox.clear()
         self.ui.lineEdit_19.clear()
@@ -874,106 +959,108 @@ class MainWin(QMainWindow):
         pass
 
     def clicked_add_to_scheme(self):
-        if MainWin.ok7:
-            self.is_clear = False
-            # idx: int or list
-            if self.ui.radioButton_8.isChecked():
-                # 用常用方案
-                idx = self.ui.comboBox_5.currentIndex()
-                if not self.scheme:
-                    self.scheme = [idx]
-                else:
-                    self.scheme.append(idx)
-                    if len(self.scheme) > 5:
-                        self.scheme = self.scheme[:5]
-                        return 0
-                self.get_skt_deg_result(idx)
-                text = self.ui.label_57.text()
-                self.ui.label_57.setText(text + '\n%d. 常用方案(%d)' % (len(self.scheme), idx + 1))
-                self.ui.comboBox_2.addItem('%d. 常用方案(%d)' % (len(self.scheme), idx + 1))
-                self.ui.comboBox_3.addItem('%d. 常用方案(%d)' % (len(self.scheme), idx + 1))
-                self.ui.comboBox_4.addItem('%d. 常用方案(%d)' % (len(self.scheme), idx + 1))
-                self.data_scheme.append('%d. 常用方案(%d)' % (len(self.scheme), idx + 1))
+        if not MainWin.ok7:
+            return
+        self.is_clear = False
+        # idx: int or list
+        if self.ui.radioButton_8.isChecked():
+            # 用常用方案
+            idx = self.ui.comboBox_5.currentIndex()
+            if not self.scheme:
+                self.scheme = [idx]
             else:
-                # 用手动方案
-                try:
-                    idx = self.ui.lineEdit_27.text().split(',')
-                    idx = [int(i) for i in idx]
-                except:
-                    QMessageBox.warning(self, '警告', '输入格式有误！')
+                self.scheme.append(idx)
+                if len(self.scheme) > 5:
+                    self.scheme = self.scheme[:5]
                     return 0
-                if idx == []:
-                    QMessageBox.warning(self, '警告', '输入格式有误！')
-                    return 0
-                if not self.scheme:
-                    self.scheme = [idx]
-                else:
-                    self.scheme.append(idx)
-                text = self.ui.label_57.text()
-                n = 0
-                for i in self.scheme:
-                    if type(i) == list:
-                        n += 1  # 计算手动方案的个数
-                self.get_skt_deg_result(idx)
-                self.ui.label_57.setText(text + '\n%d. 手动方案(%d)' % (len(self.scheme), n))
-                self.ui.comboBox_2.addItem('%d. 手动方案(%d)' % (len(self.scheme), n))
-                self.ui.comboBox_3.addItem('%d. 手动方案(%d)' % (len(self.scheme), n))
-                self.ui.comboBox_4.addItem('%d. 手动方案(%d)' % (len(self.scheme), n))
-                self.data_scheme.append('%d. 手动方案(%d)' % (len(self.scheme), n))
-            
+            self.get_skt_deg_result(idx)
+            text = self.ui.label_57.text()
+            self.ui.label_57.setText(text + '\n%d. 常用方案(%d)' % (len(self.scheme), idx + 1))
+            self.ui.comboBox_2.addItem('%d. 常用方案(%d)' % (len(self.scheme), idx + 1))
+            self.ui.comboBox_3.addItem('%d. 常用方案(%d)' % (len(self.scheme), idx + 1))
+            self.ui.comboBox_4.addItem('%d. 常用方案(%d)' % (len(self.scheme), idx + 1))
+            self.data_scheme.append('%d. 常用方案(%d)' % (len(self.scheme), idx + 1))
+        else:
+            # 用手动方案
+            try:
+                idx = self.ui.lineEdit_27.text().split(',')
+                idx = [int(i) for i in idx]
+            except:
+                QMessageBox.warning(self, '警告', '输入格式有误！')
+                return 0
+            if idx == []:
+                QMessageBox.warning(self, '警告', '输入格式有误！')
+                return 0
+            if not self.scheme:
+                self.scheme = [idx]
+            else:
+                self.scheme.append(idx)
+            text = self.ui.label_57.text()
+            n = 0
+            for i in self.scheme:
+                if type(i) == list:
+                    n += 1  # 计算手动方案的个数
+            self.get_skt_deg_result(idx)
+            self.ui.label_57.setText(text + '\n%d. 手动方案(%d)' % (len(self.scheme), n))
+            self.ui.comboBox_2.addItem('%d. 手动方案(%d)' % (len(self.scheme), n))
+            self.ui.comboBox_3.addItem('%d. 手动方案(%d)' % (len(self.scheme), n))
+            self.ui.comboBox_4.addItem('%d. 手动方案(%d)' % (len(self.scheme), n))
+            self.data_scheme.append('%d. 手动方案(%d)' % (len(self.scheme), n))
+
     def get_skt_deg_result(self, idx):
-        if MainWin.ok7:
-            if self.is_clear:
-                return 0
-            else:
-                self.is_clear = False
-            # 骨架曲线
+        if not MainWin.ok7:
+            return
+        if self.is_clear:
+            return 0
+        else:
+            self.is_clear = False
+        # 骨架曲线
+        if type(idx) == int:
+            # 常用方案
+            skt_u, skt_F, skt_d, _ = get_skeleton_curve_1(self.gujia_u, self.gujia_F, self.gujia_d, idx)
+        else:
+            # 手动方案
+            skt_u, skt_F, skt_d, _ = get_skeleton_curve_2(self.gujia_u, self.gujia_F, self.gujia_d, idx)
+        self.data_skeleton_curve.append([skt_u, skt_F, skt_d])
+        # 刚度退化
+        if type(idx) == int:
+            skt_u, skt_F, _, _ = get_skeleton_curve_1(self.gujia_u, self.gujia_F, self.gujia_d, idx)
+        else:
+            skt_u, skt_F, _, _ = get_skeleton_curve_2(self.gujia_u, self.gujia_F, self.gujia_d, idx)
+        n = int(len(skt_u) / 2)
+        stif_deg_x, stif_deg_y = [], []
+        for i in range(n):
+            stif_deg_x.append(skt_u[n + i])
+            deg_val = (skt_F[n + i] - skt_F[n - i - 1]) / (skt_u[n] - skt_u[n - i - 1])  # 割线刚度退化值
+            stif_deg_y.append(deg_val)
+        self.data_stiffness_degradation.append([stif_deg_x, stif_deg_y])
+        # 强度退化
+        if type(idx) == int:
+            skt_u, skt_F, _, N = get_skeleton_curve_1(self.gujia_u, self.gujia_F, self.gujia_d, idx)
+        else:
+            skt_u, skt_F, _, N = get_skeleton_curve_2(self.gujia_u, self.gujia_F, self.gujia_d, idx)
+        if N[0] > 0:
             if type(idx) == int:
-                # 常用方案
-                skt_u, skt_F, _ = get_skeleton_curve_1(self.gujia_u, self.gujia_F, idx)
+                skt_u0, skt_F0, _, _ = get_skeleton_curve_1(self.gujia_u, self.gujia_F, self.gujia_d, idx, previous_round=True)
             else:
-                # 手动方案
-                skt_u, skt_F, _ = get_skeleton_curve_2(self.gujia_u, self.gujia_F, idx)
-            self.data_skeleton_curve.append([skt_u, skt_F])
-            # 刚度退化
-            if type(idx) == int:
-                skt_u, skt_F, _ = get_skeleton_curve_1(self.gujia_u, self.gujia_F, idx)
-            else:
-                skt_u, skt_F, _ = get_skeleton_curve_2(self.gujia_u, self.gujia_F, idx)
-            n = int(len(skt_u) / 2)
-            stif_deg_x, stif_deg_y = [], []
-            for i in range(n):
-                stif_deg_x.append(skt_u[n + i])
-                deg_val = (skt_F[n + i] - skt_F[n - i - 1]) / (skt_u[n] - skt_u[n - i - 1])  # 割线刚度退化值
-                stif_deg_y.append(deg_val)
-            self.data_stiffness_degradation.append([stif_deg_x, stif_deg_y])
-            # 强度退化
-            if type(idx) == int:
-                skt_u, skt_F, N = get_skeleton_curve_1(self.gujia_u, self.gujia_F, idx)
-            else:
-                skt_u, skt_F, N = get_skeleton_curve_2(self.gujia_u, self.gujia_F, idx)
-            if N[0] > 0:
-                if type(idx) == int:
-                    skt_u0, skt_F0, _ = get_skeleton_curve_1(self.gujia_u, self.gujia_F, idx, previous_round=True)
-                else:
-                    skt_u0, skt_F0, _ = get_skeleton_curve_2(self.gujia_u, self.gujia_F, idx, previous_round=True)
-            else:
-                # 无上一圈，无强度退化
-                self.data_strength_degradation.append([None, None])
-                return 0
-            strg_deg_x, strg_deg_y = [], []
-            if len(skt_u) > len(skt_u0):
-                delete_num = int((len(skt_u) - len(skt_u0)) / 2)
-                skt_u = skt_u[delete_num: -delete_num]
-                skt_F = skt_F[delete_num: -delete_num]
-            elif len(skt_u) < len(skt_u0):
-                delete_num = int((len(skt_u0) - len(skt_u)) / 2)
-                skt_u0 = skt_u0[delete_num: -delete_num]
-                skt_F0 = skt_F0[delete_num: -delete_num]
-            for i, (F, F0) in enumerate(zip(skt_F, skt_F0)):
-                strg_deg_x.append(skt_u[i])
-                strg_deg_y.append(F / F0)
-            self.data_strength_degradation.append([strg_deg_x, strg_deg_y])
+                skt_u0, skt_F0, _, _ = get_skeleton_curve_2(self.gujia_u, self.gujia_F, self.gujia_d, idx, previous_round=True)
+        else:
+            # 无上一圈，无强度退化
+            self.data_strength_degradation.append([None, None])
+            return 0
+        strg_deg_x, strg_deg_y = [], []
+        if len(skt_u) > len(skt_u0):
+            delete_num = int((len(skt_u) - len(skt_u0)) / 2)
+            skt_u = skt_u[delete_num: -delete_num]
+            skt_F = skt_F[delete_num: -delete_num]
+        elif len(skt_u) < len(skt_u0):
+            delete_num = int((len(skt_u0) - len(skt_u)) / 2)
+            skt_u0 = skt_u0[delete_num: -delete_num]
+            skt_F0 = skt_F0[delete_num: -delete_num]
+        for i, (F, F0) in enumerate(zip(skt_F, skt_F0)):
+            strg_deg_x.append(skt_u[i])
+            strg_deg_y.append(F / F0)
+        self.data_strength_degradation.append([strg_deg_x, strg_deg_y])
 
     def clear_all_scheme(self):
         self.is_clear = True
@@ -993,23 +1080,25 @@ class MainWin(QMainWindow):
         MainWin.ok7_1 = False
 
     def plot_skeleton(self):
-        if MainWin.ok7:
-            idx_skt = self.ui.comboBox_2.currentIndex()
-            skt_u, skt_F = self.data_skeleton_curve[idx_skt]
-            self.pg13.clear()
-            self.pg13.plot(MainWin.u7, MainWin.F7, pen=self.pen4, c='g')
-            self.pg13.plot(skt_u, skt_F, pen=self.pen5, symbolBrush='red', symbol='o', symbolSize=10)
-            # self.pg13.plot([0], [0], pen=None, symbolBrush='red', symbol='o', symbolSize=10)
-            self.pg13.autoRange()
-            
+        if not MainWin.ok7:
+            return
+        idx_skt = self.ui.comboBox_2.currentIndex()
+        skt_u, skt_F, _ = self.data_skeleton_curve[idx_skt]
+        self.pg13.clear()
+        self.pg13.plot(MainWin.u7, MainWin.F7, pen=self.pen4, c='g')
+        self.pg13.plot(skt_u, skt_F, pen=self.pen5, symbolBrush='red', symbol='o', symbolSize=10)
+        # self.pg13.plot([0], [0], pen=None, symbolBrush='red', symbol='o', symbolSize=10)
+        self.pg13.autoRange()
+
 
     def plot_stiffness_degradation(self):
-        if MainWin.ok7:
-            idx_stif = self.ui.comboBox_3.currentIndex()
-            stif_deg_x, stif_deg_y = self.data_stiffness_degradation[idx_stif]
-            self.pg14.clear()
-            self.pg14.plot(stif_deg_x, stif_deg_y, pen=self.pen1, symbolBrush=(68, 114, 196), symbol='o', symbolSize=10)
-            self.pg14.autoRange()
+        if not MainWin.ok7:
+            return
+        idx_stif = self.ui.comboBox_3.currentIndex()
+        stif_deg_x, stif_deg_y = self.data_stiffness_degradation[idx_stif]
+        self.pg14.clear()
+        self.pg14.plot(stif_deg_x, stif_deg_y, pen=self.pen1, symbolBrush=(68, 114, 196), symbol='o', symbolSize=10)
+        self.pg14.autoRange()
     
     def plot_strength_degradation(self):
         if MainWin.ok7:
@@ -1025,13 +1114,14 @@ class MainWin(QMainWindow):
             self.pg15.autoRange()
             
     def tab7_1_finished(self):
-        if MainWin.ok7:
-            MainWin.ok7_1 = True
-            MainWin.u7_1, MainWin.F7_1 = MainWin.u7, MainWin.F7
-            self.tab8_start()
+        if not MainWin.ok7:
+            return
+        MainWin.ok7_1 = True
+        MainWin.u7_1, MainWin.F7_1, MainWin.d7_1 = MainWin.u7, MainWin.F7, MainWin.d7
+        self.tab8_start()
 
     def clear_tab7_1(self):
-        MainWin.u7_1, MainWin.F7_1 = None, None
+        MainWin.u7_1, MainWin.F7_1, MainWin.d7_1 = None, None, None
         MainWin.ok7_1 = False
         self.ui.label_57.setText('已选择方案（最多五个）：')
         self.ui.comboBox_5.setCurrentIndex(0)
@@ -1056,270 +1146,329 @@ class MainWin(QMainWindow):
         self.result_display()
 
     def result_display(self):
-        if MainWin.ok7_1:
-            self.ui.lineEdit_14.setText(str(round(max(MainWin.u7_1), 5)))
-            self.ui.lineEdit_15.setText(str(round(min(MainWin.u7_1), 5)))
-            self.ui.lineEdit_16.setText(str(round(max(MainWin.F7_1), 5)))
-            self.ui.lineEdit_17.setText(str(round(min(MainWin.F7_1), 5)))
-            self.ui.lineEdit_18.setText(str(round(len(MainWin.u7_1), 5)))
-            self.pg11.clear()
-            self.pg11.plot(MainWin.u7_1, MainWin.F7_1, pen=self.pen1)
-            self.pg11.autoRange()
+        if not MainWin.ok7_1:
+            return
+        self.ui.lineEdit_14.setText(str(round(max(MainWin.u7_1), 5)))
+        self.ui.lineEdit_15.setText(str(round(min(MainWin.u7_1), 5)))
+        self.ui.lineEdit_16.setText(str(round(max(MainWin.F7_1), 5)))
+        self.ui.lineEdit_17.setText(str(round(min(MainWin.F7_1), 5)))
+        self.ui.lineEdit_18.setText(str(round(len(MainWin.u7_1), 5)))
+        self.pg11.clear()
+        self.pg11.plot(MainWin.u7_1, MainWin.F7_1, pen=self.pen1)
+        self.pg11.autoRange()
 
     def data_hysteretic_curve(self):
-        if MainWin.ok7_1:
-            data = np.zeros((len(MainWin.u7_1), 2))
-            data[:, 0], data[:, 1] = MainWin.u7_1, MainWin.F7_1
-            self.WinData = WinData(data, content='滞回曲线')
-            _translate = QCoreApplication.translate
-            self.WinData.setWindowTitle(_translate("win_getData", "滞回曲线"))
-            self.WinData.ui_data.tableWidget.horizontalHeaderItem(0).setText(_translate("win_getData", "位移"))
-            self.WinData.ui_data.tableWidget.horizontalHeaderItem(1).setText(_translate("win_getData", "力"))
-            self.WinData.ui_data.tableWidget.setRowCount(len(MainWin.u7_1))
-            for i in range(len(MainWin.u7_1)):
-                item_x = QTableWidgetItem(str(round(MainWin.u7_1[i], 5)))
-                item_y = QTableWidgetItem(str(round(MainWin.F7_1[i], 5)))
-                self.WinData.ui_data.tableWidget.setItem(i, 0, item_x)
-                self.WinData.ui_data.tableWidget.setItem(i, 1, item_y)
-            self.WinData.exec_()
-            del self.WinData
-        else:
+        if not MainWin.ok7_1:
             QMessageBox.warning(self, '警告', '没有数据！')
+            return
+        data = np.zeros((len(MainWin.u7_1), 2))
+        data[:, 0], data[:, 1] = MainWin.u7_1, MainWin.F7_1
+        self.WinData = WinData(data, content='滞回曲线')
+        _translate = QCoreApplication.translate
+        self.WinData.setWindowTitle(_translate("win_getData", "滞回曲线"))
+        self.WinData.ui_data.tableWidget.horizontalHeaderItem(0).setText(_translate("win_getData", "位移"))
+        self.WinData.ui_data.tableWidget.horizontalHeaderItem(1).setText(_translate("win_getData", "力"))
+        self.WinData.ui_data.tableWidget.setRowCount(len(MainWin.u7_1))
+        for i in range(len(MainWin.u7_1)):
+            item_x = QTableWidgetItem(str(round(MainWin.u7_1[i], 5)))
+            item_y = QTableWidgetItem(str(round(MainWin.F7_1[i], 5)))
+            self.WinData.ui_data.tableWidget.setItem(i, 0, item_x)
+            self.WinData.ui_data.tableWidget.setItem(i, 1, item_y)
+        self.WinData.exec_()
+        del self.WinData
 
     def data_skeleton_points(self):
-        if MainWin.ok7_1:
-            data = np.zeros((len(self.gujia_u) + 1, 2))
-            data[:, 0], data[:, 1] = np.insert(self.gujia_u, 0, 0), np.insert(self.gujia_F, 0, 0)
-            self.WinData = WinData(data, content='骨架点')
-            _translate = QCoreApplication.translate
-            self.WinData.setWindowTitle(_translate("win_getData", "骨架点"))
-            self.WinData.ui_data.tableWidget.horizontalHeaderItem(0).setText(_translate("win_getData", "位移"))
-            self.WinData.ui_data.tableWidget.horizontalHeaderItem(1).setText(_translate("win_getData", "力"))
-            self.WinData.ui_data.tableWidget.setRowCount(len(self.gujia_u) + 1)
-            for i in range(len(data)):
-                item_x = QTableWidgetItem(str(round(data[i, 0], 5)))
-                item_y = QTableWidgetItem(str(round(data[i, 1], 5)))
-                self.WinData.ui_data.tableWidget.setItem(i, 0, item_x)
-                self.WinData.ui_data.tableWidget.setItem(i, 1, item_y)
-            self.WinData.exec_()
-            del self.WinData
-        else:
+        if not MainWin.ok7_1:
             QMessageBox.warning(self, '警告', '没有数据！')
+            return
+        data = np.zeros((len(self.gujia_u) + 1, 2))
+        data[:, 0], data[:, 1] = np.insert(self.gujia_u, 0, 0), np.insert(self.gujia_F, 0, 0)
+        self.WinData = WinData(data, content='骨架点')
+        _translate = QCoreApplication.translate
+        self.WinData.setWindowTitle(_translate("win_getData", "骨架点"))
+        self.WinData.ui_data.tableWidget.horizontalHeaderItem(0).setText(_translate("win_getData", "位移"))
+        self.WinData.ui_data.tableWidget.horizontalHeaderItem(1).setText(_translate("win_getData", "力"))
+        self.WinData.ui_data.tableWidget.setRowCount(len(self.gujia_u) + 1)
+        for i in range(len(data)):
+            item_x = QTableWidgetItem(str(round(data[i, 0], 5)))
+            item_y = QTableWidgetItem(str(round(data[i, 1], 5)))
+            self.WinData.ui_data.tableWidget.setItem(i, 0, item_x)
+            self.WinData.ui_data.tableWidget.setItem(i, 1, item_y)
+        self.WinData.exec_()
+        del self.WinData
 
     def data_Es(self):
-        if MainWin.ok7_1:
-            data = np.zeros((len(self.Es), 2))
-            data[:, 0], data[:, 1] = np.arange(0, len(self.Es), 1), self.Es
-            self.WinData = WinData(data, content='单圈耗能')
-            _translate = QCoreApplication.translate
-            self.WinData.setWindowTitle(_translate("win_getData", "单圈耗能"))
-            self.WinData.ui_data.tableWidget.horizontalHeaderItem(0).setText(_translate("win_getData", "循环周数"))
-            self.WinData.ui_data.tableWidget.horizontalHeaderItem(1).setText(_translate("win_getData", "单圈耗能"))
-            self.WinData.ui_data.tableWidget.setRowCount(len(self.Es))
-            for i in range(len(self.Es)):
-                item_x = QTableWidgetItem(str(i))
-                item_y = QTableWidgetItem(str(round(self.Es[i], 5)))
-                self.WinData.ui_data.tableWidget.setItem(i, 0, item_x)
-                self.WinData.ui_data.tableWidget.setItem(i, 1, item_y)
-            self.WinData.exec_()
-            del self.WinData
-        else:
+        if not MainWin.ok7_1:
             QMessageBox.warning(self, '警告', '没有数据！')
+            return
+        data = np.zeros((len(self.Es), 2))
+        data[:, 0], data[:, 1] = np.arange(0, len(self.Es), 1), self.Es
+        self.WinData = WinData(data, content='单圈耗能')
+        _translate = QCoreApplication.translate
+        self.WinData.setWindowTitle(_translate("win_getData", "单圈耗能"))
+        self.WinData.ui_data.tableWidget.horizontalHeaderItem(0).setText(_translate("win_getData", "循环周数"))
+        self.WinData.ui_data.tableWidget.horizontalHeaderItem(1).setText(_translate("win_getData", "单圈耗能"))
+        self.WinData.ui_data.tableWidget.setRowCount(len(self.Es))
+        for i in range(len(self.Es)):
+            item_x = QTableWidgetItem(str(i))
+            item_y = QTableWidgetItem(str(round(self.Es[i], 5)))
+            self.WinData.ui_data.tableWidget.setItem(i, 0, item_x)
+            self.WinData.ui_data.tableWidget.setItem(i, 1, item_y)
+        self.WinData.exec_()
+        del self.WinData
 
     def data_Ea(self):
-        if MainWin.ok7_1:
-            data = np.zeros((len(self.Ea), 2))
-            data[:, 0], data[:, 1] = np.arange(0, len(self.Ea), 1), self.Ea
-            self.WinData = WinData(data, content='累积耗能')
-            _translate = QCoreApplication.translate
-            self.WinData.setWindowTitle(_translate("win_getData", "累积耗能"))
-            self.WinData.ui_data.tableWidget.horizontalHeaderItem(0).setText(_translate("win_getData", "循环周数"))
-            self.WinData.ui_data.tableWidget.horizontalHeaderItem(1).setText(_translate("win_getData", "累积耗能"))
-            self.WinData.ui_data.tableWidget.setRowCount(len(self.Ea))
-            for i in range(len(self.Ea)):
-                item_x = QTableWidgetItem(str(i))
-                item_y = QTableWidgetItem(str(round(self.Ea[i], 5)))
-                self.WinData.ui_data.tableWidget.setItem(i, 0, item_x)
-                self.WinData.ui_data.tableWidget.setItem(i, 1, item_y)
-            self.WinData.exec_()
-            del self.WinData
-        else:
+        if not MainWin.ok7_1:
             QMessageBox.warning(self, '警告', '没有数据！')
+            return
+        data = np.zeros((len(self.Ea), 2))
+        data[:, 0], data[:, 1] = np.arange(0, len(self.Ea), 1), self.Ea
+        self.WinData = WinData(data, content='累积耗能')
+        _translate = QCoreApplication.translate
+        self.WinData.setWindowTitle(_translate("win_getData", "累积耗能"))
+        self.WinData.ui_data.tableWidget.horizontalHeaderItem(0).setText(_translate("win_getData", "循环周数"))
+        self.WinData.ui_data.tableWidget.horizontalHeaderItem(1).setText(_translate("win_getData", "累积耗能"))
+        self.WinData.ui_data.tableWidget.setRowCount(len(self.Ea))
+        for i in range(len(self.Ea)):
+            item_x = QTableWidgetItem(str(i))
+            item_y = QTableWidgetItem(str(round(self.Ea[i], 5)))
+            self.WinData.ui_data.tableWidget.setItem(i, 0, item_x)
+            self.WinData.ui_data.tableWidget.setItem(i, 1, item_y)
+        self.WinData.exec_()
+        del self.WinData
 
     def data_zeta(self):
-        if MainWin.ok7_1:
-            data = np.zeros((len(self.zeta), 2))
-            data[:, 0], data[:, 1] = np.arange(0, len(self.zeta), 1), self.zeta
-            self.WinData = WinData(data, content='等效粘滞阻尼系数')
-            _translate = QCoreApplication.translate
-            self.WinData.setWindowTitle(_translate("win_getData", "等效阻尼"))
-            self.WinData.ui_data.tableWidget.horizontalHeaderItem(0).setText(_translate("win_getData", "循环周数"))
-            self.WinData.ui_data.tableWidget.horizontalHeaderItem(1).setText(_translate("win_getData", "等效阻尼"))
-            self.WinData.ui_data.tableWidget.setRowCount(len(self.zeta))
-            for i in range(len(self.zeta)):
-                item_x = QTableWidgetItem(str(i))
-                item_y = QTableWidgetItem(str(round(self.zeta[i], 5)))
-                self.WinData.ui_data.tableWidget.setItem(i, 0, item_x)
-                self.WinData.ui_data.tableWidget.setItem(i, 1, item_y)
-            self.WinData.exec_()
-            del self.WinData
-        else:
+        if not MainWin.ok7_1:
             QMessageBox.warning(self, '警告', '没有数据！')
+            return
+        data = np.zeros((len(self.zeta), 2))
+        data[:, 0], data[:, 1] = np.arange(0, len(self.zeta), 1), self.zeta
+        self.WinData = WinData(data, content='等效粘滞阻尼系数')
+        _translate = QCoreApplication.translate
+        self.WinData.setWindowTitle(_translate("win_getData", "等效阻尼"))
+        self.WinData.ui_data.tableWidget.horizontalHeaderItem(0).setText(_translate("win_getData", "循环周数"))
+        self.WinData.ui_data.tableWidget.horizontalHeaderItem(1).setText(_translate("win_getData", "等效阻尼"))
+        self.WinData.ui_data.tableWidget.setRowCount(len(self.zeta))
+        for i in range(len(self.zeta)):
+            item_x = QTableWidgetItem(str(i))
+            item_y = QTableWidgetItem(str(round(self.zeta[i], 5)))
+            self.WinData.ui_data.tableWidget.setItem(i, 0, item_x)
+            self.WinData.ui_data.tableWidget.setItem(i, 1, item_y)
+        self.WinData.exec_()
+        del self.WinData
 
     def data_residual_deformation(self):
-        if MainWin.ok7_1:
-            data = np.zeros((len(self.residual_pos), 3))
-            data[:, 0], data[:, 1], data[:, 2] = np.arange(1, len(self.residual_pos) + 1, 1), self.residual_pos, self.residual_neg
-            self.WinData = WinData(data, content='残余变形', isResidual=True)
-            _translate = QCoreApplication.translate
-            self.WinData.setWindowTitle(_translate("win_getData", "残余变形"))
-            self.WinData.ui_data.tableWidget.horizontalHeaderItem(0).setText(_translate("win_getData", "循环周数"))
-            self.WinData.ui_data.tableWidget.horizontalHeaderItem(1).setText(_translate("win_getData", "正向残余变形"))
-            self.WinData.ui_data.tableWidget.horizontalHeaderItem(2).setText(_translate("win_getData", "负向残余变形"))
-            self.WinData.ui_data.tableWidget.setRowCount(len(self.residual_pos))
-            for i in range(len(self.residual_pos)):
-                item_1 = QTableWidgetItem(str(i + 1))
-                item_2 = QTableWidgetItem(str(round(self.residual_pos[i], 5)))
-                item_3 = QTableWidgetItem(str(round(self.residual_neg[i], 5)))
-                self.WinData.ui_data.tableWidget.setItem(i, 0, item_1)
-                self.WinData.ui_data.tableWidget.setItem(i, 1, item_2)
-                self.WinData.ui_data.tableWidget.setItem(i, 2, item_3)
-            self.WinData.exec_()
-            del self.WinData
-        else:
+        if not MainWin.ok7_1:
             QMessageBox.warning(self, '警告', '没有数据！')
+            return
+        data = np.zeros((len(self.residual_pos), 3))
+        data[:, 0], data[:, 1], data[:, 2] = np.arange(1, len(self.residual_pos) + 1, 1), self.residual_pos, self.residual_neg
+        self.WinData = WinData(data, content='残余变形', isResidual=True)
+        _translate = QCoreApplication.translate
+        self.WinData.setWindowTitle(_translate("win_getData", "残余变形"))
+        self.WinData.ui_data.tableWidget.horizontalHeaderItem(0).setText(_translate("win_getData", "循环周数"))
+        self.WinData.ui_data.tableWidget.horizontalHeaderItem(1).setText(_translate("win_getData", "正向残余变形"))
+        self.WinData.ui_data.tableWidget.horizontalHeaderItem(2).setText(_translate("win_getData", "负向残余变形"))
+        self.WinData.ui_data.tableWidget.setRowCount(len(self.residual_pos))
+        for i in range(len(self.residual_pos)):
+            item_1 = QTableWidgetItem(str(i + 1))
+            item_2 = QTableWidgetItem(str(round(self.residual_pos[i], 5)))
+            item_3 = QTableWidgetItem(str(round(self.residual_neg[i], 5)))
+            self.WinData.ui_data.tableWidget.setItem(i, 0, item_1)
+            self.WinData.ui_data.tableWidget.setItem(i, 1, item_2)
+            self.WinData.ui_data.tableWidget.setItem(i, 2, item_3)
+        self.WinData.exec_()
+        del self.WinData
+
+    def data_additional_data(self):
+        if not MainWin.ok7_1:
+            QMessageBox.warning(self, '警告', '没有数据！')
+            return
+        if not MainWin.d_import:
+            QMessageBox.warning(self, '警告', '没有导入附加数据！')
+            return
+        n_col = MainWin.d7_1.shape[1]
+        data = np.zeros((len(MainWin.d7_1), n_col))
+        for i in range(n_col):
+            data[:, 0] = MainWin.d7_1[:, i]
+        self.WinData = WinData(data, content='附加数据')
+        _translate = QCoreApplication.translate
+        self.WinData.setWindowTitle(_translate("win_getData", "附加数据"))
+        for i in range(n_col):
+            self.WinData.ui_data.tableWidget.horizontalHeaderItem(i).setText(_translate("win_getData", f"({i+1})"))
+        if n_col == 1:
+            self.WinData.ui_data.tableWidget.removeColumn(1)
+        self.WinData.ui_data.tableWidget.setRowCount(len(MainWin.d7_1))
+        for row in range(len(MainWin.d7_1)):
+            for col in range(n_col):
+                item = QTableWidgetItem(str(round(MainWin.d7_1[row, col], 5)))
+                self.WinData.ui_data.tableWidget.setItem(row, col, item)
+        self.WinData.exec_()
+        del self.WinData
 
     def export_all_data(self):
-        if MainWin.ok7_1:
-            self.ui.pushButton_24.setText('正在导出...')
-            self.ui.pushButton_24.setEnabled(False)
-            output_file = QFileDialog.getExistingDirectory(self, '选择保存路径文件夹')
-            if not output_file:
-                return 0
-            np.savetxt(f'{output_file}/滞回曲线.txt', np.column_stack((MainWin.u7_1, MainWin.F7_1)))
-            np.savetxt(f'{output_file}/骨架点.txt', np.column_stack((self.gujia_u, self.gujia_F)))
-            np.savetxt(f'{output_file}/单圈耗能.txt', self.Es)
-            np.savetxt(f'{output_file}/累积耗能.txt', self.Ea)
-            np.savetxt(f'{output_file}/等效粘滞阻尼系数.txt', self.zeta)
-            np.savetxt(f'{output_file}/残余变形.txt', np.column_stack((np.arange(0, len(self.residual_pos), 1), self.residual_pos, self.residual_neg)))
-            if not os.path.exists(f'{output_file}/各圈滞回环'):
-                os.mkdir(f'{output_file}/各圈滞回环')
-            for i, (u_loop, F_loop) in enumerate(zip(self.u_loops, self.F_loops)):
-                np.savetxt(f'{output_file}/各圈滞回环/第{i+1}圈滞回环.txt', np.column_stack((u_loop, F_loop)))
-            export_result = self.creat_excel(output_file)
-            if export_result:
-                QMessageBox.information(self, '提示', '已导出所有数据！')
-        else:
+        if not MainWin.ok7_1:
             QMessageBox.warning(self, '警告', '没有数据！')
+            return
+        self.ui.pushButton_24.setText('正在导出...')
+        self.ui.pushButton_24.setEnabled(False)
+        output_file = QFileDialog.getExistingDirectory(self, '选择保存路径文件夹')
+        if not output_file:
+            return 0
+        np.savetxt(f'{output_file}/滞回曲线.txt', np.column_stack((MainWin.u7_1, MainWin.F7_1)))
+        np.savetxt(f'{output_file}/骨架点.txt', np.column_stack((self.gujia_u, self.gujia_F)))
+        np.savetxt(f'{output_file}/单圈耗能.txt', self.Es)
+        np.savetxt(f'{output_file}/累积耗能.txt', self.Ea)
+        np.savetxt(f'{output_file}/等效粘滞阻尼系数.txt', self.zeta)
+        np.savetxt(f'{output_file}/残余变形.txt', np.column_stack((np.arange(0, len(self.residual_pos), 1), self.residual_pos, self.residual_neg)))
+        if not os.path.exists(f'{output_file}/各圈滞回环'):
+            os.mkdir(f'{output_file}/各圈滞回环')
+        for i, (u_loop, F_loop) in enumerate(zip(self.u_loops, self.F_loops)):
+            np.savetxt(f'{output_file}/各圈滞回环/第{i+1}圈滞回环.txt', np.column_stack((u_loop, F_loop)))
+        if MainWin.d_import:
+            np.savetxt(f'附加数据.txt', MainWin.d7_1)
+        export_result = self.creat_excel(output_file)
+        if export_result:
+            QMessageBox.information(self, '提示', '已导出所有数据！')
 
     def creat_excel(self, output_file):
-        if MainWin.ok7_1:
-            wb = px.Workbook()
-            # 1 滞回曲线
-            ws1 = wb.active
-            ws1.title = '滞回曲线'
-            ws1['A1'] = 'u'
-            ws1['B1'] = 'F'
-            self.write_col_to_excel(ws1, MainWin.u7_1, 2, 1)
-            self.write_col_to_excel(ws1, MainWin.F7_1, 2, 2)
-            for row in ws1.iter_rows():
+        if not MainWin.ok7_1:
+            return
+        wb = px.Workbook()
+        # 1 滞回曲线
+        ws1 = wb.active
+        ws1.title = '滞回曲线'
+        ws1['A1'] = 'u'
+        ws1['B1'] = 'F'
+        self.write_col_to_excel(ws1, MainWin.u7_1, 2, 1)
+        self.write_col_to_excel(ws1, MainWin.F7_1, 2, 2)
+        for row in ws1.iter_rows():
+            for cell in row:
+                cell.alignment = Alignment(horizontal='center', vertical='center')
+        # 2 骨架曲线&退化曲线
+        ws2 = wb.create_sheet('骨架曲线&退化曲线', 1)
+        if MainWin.d_import:
+            n_col = MainWin.d7_1.shape[1]
+        else:
+            n_col = 0
+        for i, title in enumerate(self.data_scheme):
+            title = self.data_scheme[i][3:]
+            ws2.cell(row=1, column=1+(7+n_col)*i, value=title)
+            ws2.cell(row=3, column=1+(7+n_col)*i, value='骨架曲线')
+            ws2.cell(row=3, column=3+(7+n_col)*i, value='刚度退化曲线')
+            ws2.cell(row=3, column=5+(7+n_col)*i, value='强度退化曲线')
+            if MainWin.d_import:
+                ws2.cell(row=3, column=7+(7+n_col)*i, value='附加数据')
+            ws2.cell(row=4, column=1+(7+n_col)*i, value='u')
+            ws2.cell(row=4, column=2+(7+n_col)*i, value='F')
+            ws2.cell(row=4, column=3+(7+n_col)*i, value='u')
+            ws2.cell(row=4, column=4+(7+n_col)*i, value='Ke')
+            ws2.cell(row=4, column=5+(7+n_col)*i, value='u')
+            ws2.cell(row=4, column=6+(7+n_col)*i, value='lamda')
+            if MainWin.d_import:
+                for j in range(n_col):
+                    ws2.cell(row=4, column=6+(7+n_col)*i+j+1, value=f'({j+1})')
+            ws2.merge_cells(start_row=1, start_column=1+(7+n_col)*i, end_row=2, end_column=6+(7+n_col)*i+n_col)
+            ws2.merge_cells(start_row=3, start_column=1+(7+n_col)*i, end_row=3, end_column=2+(7+n_col)*i)
+            ws2.merge_cells(start_row=3, start_column=3+(7+n_col)*i, end_row=3, end_column=4+(7+n_col)*i)
+            ws2.merge_cells(start_row=3, start_column=5+(7+n_col)*i, end_row=3, end_column=6+(7+n_col)*i)
+            if MainWin.d_import:
+                ws2.merge_cells(start_row=3, start_column=7+(7+n_col)*i, end_row=3, end_column=7+(7+n_col)*i+n_col-1)
+            self.write_col_to_excel(ws2, self.data_skeleton_curve[i][0], 5, 1+(7+n_col)*i)
+            self.write_col_to_excel(ws2, self.data_skeleton_curve[i][1], 5, 2+(7+n_col)*i)
+            self.write_col_to_excel(ws2, self.data_stiffness_degradation[i][0], 5, 3+(7+n_col)*i)
+            self.write_col_to_excel(ws2, self.data_stiffness_degradation[i][1], 5, 4+(7+n_col)*i)
+            if MainWin.d_import:
+                for j in range(n_col):
+                    data_col = self.data_skeleton_curve[i][2][:, j]
+                    self.write_col_to_excel(ws2, data_col, 5, 6+(7+n_col)*i+j+1)
+            if self.data_strength_degradation[i][0] is None:
+                ws2.cell(row=5, column=5+(7+n_col)*i, value='当前方案无强度退化')
+                ws2.merge_cells(start_row=5, start_column=5+(7+n_col)*i, end_row=5, end_column=6+(7+n_col)*i)
+            else:
+                self.write_col_to_excel(ws2, self.data_strength_degradation[i][0], 5, 5+(7+n_col)*i)
+                self.write_col_to_excel(ws2, self.data_strength_degradation[i][1], 5, 6+(7+n_col)*i)
+        for row in ws2.iter_rows():
+            for cell in row:
+                cell.alignment = Alignment(horizontal='center', vertical='center')
+        # 3 耗能指标&残余变形
+        ws3 = wb.create_sheet('耗能指标&其他', 2)
+        ws3.cell(row=1, column=1, value='单圈耗能')
+        ws3.cell(row=1, column=3, value='累积耗能')
+        ws3.cell(row=1, column=5, value='等效粘滞阻尼系数')
+        ws3.cell(row=1, column=7, value='所有骨架点')
+        ws3.cell(row=1, column=9, value='残余变形')
+        ws3.merge_cells(start_row=1, start_column=1, end_row=1, end_column=2)
+        ws3.merge_cells(start_row=1, start_column=3, end_row=1, end_column=4)
+        ws3.merge_cells(start_row=1, start_column=5, end_row=1, end_column=6)
+        ws3.merge_cells(start_row=1, start_column=7, end_row=1, end_column=8)
+        ws3.merge_cells(start_row=1, start_column=9, end_row=1, end_column=11)
+        ws3.cell(row=2, column=1, value='cycle')
+        ws3.cell(row=2, column=2, value='Es')
+        ws3.cell(row=2, column=3, value='cycle')
+        ws3.cell(row=2, column=4, value='Ea')
+        ws3.cell(row=2, column=5, value='cycle')
+        ws3.cell(row=2, column=6, value='zeta')
+        ws3.cell(row=2, column=7, value='u')
+        ws3.cell(row=2, column=8, value='F')
+        ws3.cell(row=2, column=9, value='cycle')
+        ws3.cell(row=2, column=10, value='+')
+        ws3.cell(row=2, column=11, value='-')
+        self.write_col_to_excel(ws3, np.arange(0, len(self.Es), 1), 3, 1)
+        self.write_col_to_excel(ws3, self.Es, 3, 2)
+        self.write_col_to_excel(ws3, np.arange(0, len(self.Ea), 1), 3, 3)
+        self.write_col_to_excel(ws3, self.Ea, 3, 4)
+        self.write_col_to_excel(ws3, np.arange(0, len(self.zeta), 1), 3, 5)
+        self.write_col_to_excel(ws3, self.zeta, 3, 6)
+        self.write_col_to_excel(ws3, self.gujia_u, 3, 7)
+        self.write_col_to_excel(ws3, self.gujia_F, 3, 8)
+        data = np.zeros((len(self.residual_pos), 3))
+        data[:, 0], data[:, 1], data[:, 2] = np.arange(1, len(self.residual_pos) + 1, 1), self.residual_pos, self.residual_neg
+        self.write_col_to_excel(ws3, np.array(data[:, 0]), 3, 9)
+        self.write_col_to_excel(ws3, np.array(data[:, 1]), 3, 10)
+        self.write_col_to_excel(ws3, np.array(data[:, 2]), 3, 11)
+        for row in ws3.iter_rows():
+            for cell in row:
+                cell.alignment = Alignment(horizontal='center', vertical='center')
+        # 4 各圈滞回环
+        ws4 = wb.create_sheet('各圈滞回环', 3)
+        for i, (u_loop, F_loop) in enumerate(zip(self.u_loops, self.F_loops)):
+            ws4.cell(row=1, column=1+i*2, value=f'第{i+1}圈')
+            ws4.cell(row=2, column=1+i*2, value='u')
+            ws4.cell(row=2, column=2+i*2, value='F')
+            ws4.merge_cells(start_row=1, start_column=1+i*2, end_row=1, end_column=2+i*2)
+            self.write_col_to_excel(ws4, u_loop, 3, 1+i*2)
+            self.write_col_to_excel(ws4, F_loop, 3, 2+i*2)
+        for row in ws4.iter_rows():
+            for cell in row:
+                cell.alignment = Alignment(horizontal='center', vertical='center')
+        # 5 附加数据
+        if MainWin.d_import:
+            n_col = MainWin.d7_1.shape[1]
+            ws5 = wb.create_sheet('附加数据', 4)
+            ws5.cell(row=1, column=1, value='附加数据')
+            ws5.merge_cells(start_row=1, start_column=1, end_row=1, end_column=n_col)
+            for i in range(0, n_col):
+                col_data = MainWin.d7_1[:, i]
+                ws5.cell(row=2, column=i+1, value=f'({i+1})')
+                self.write_col_to_excel(ws5, col_data, 3, i+1)
+            for row in ws5.iter_rows():
                 for cell in row:
                     cell.alignment = Alignment(horizontal='center', vertical='center')
-            # 2 骨架曲线&退化曲线
-            ws2 = wb.create_sheet('骨架曲线&退化曲线', 1)
-            for i, title in enumerate(self.data_scheme):
-                title = self.data_scheme[i][3:]
-                ws2.cell(row=1, column=1+7*i, value=title)
-                ws2.cell(row=3, column=1+7*i, value='骨架曲线')
-                ws2.cell(row=3, column=3+7*i, value='刚度退化曲线')
-                ws2.cell(row=3, column=5+7*i, value='强度退化曲线')
-                ws2.cell(row=4, column=1+7*i, value='u')
-                ws2.cell(row=4, column=2+7*i, value='F')
-                ws2.cell(row=4, column=3+7*i, value='u')
-                ws2.cell(row=4, column=4+7*i, value='Ke')
-                ws2.cell(row=4, column=5+7*i, value='u')
-                ws2.cell(row=4, column=6+7*i, value='lamda')
-                ws2.merge_cells(start_row=1, start_column=1+7*i, end_row=2, end_column=6+7*i)
-                ws2.merge_cells(start_row=3, start_column=1+7*i, end_row=3, end_column=2+7*i)
-                ws2.merge_cells(start_row=3, start_column=3+7*i, end_row=3, end_column=4+7*i)
-                ws2.merge_cells(start_row=3, start_column=5+7*i, end_row=3, end_column=6+7*i)
-                self.write_col_to_excel(ws2, self.data_skeleton_curve[i][0], 5, 1+7*i)
-                self.write_col_to_excel(ws2, self.data_skeleton_curve[i][1], 5, 2+7*i)
-                self.write_col_to_excel(ws2, self.data_stiffness_degradation[i][0], 5, 3+7*i)
-                self.write_col_to_excel(ws2, self.data_stiffness_degradation[i][1], 5, 4+7*i)
-                if self.data_strength_degradation[i][0] is None:
-                    ws2.cell(row=5, column=5+7*i, value='当前方案无强度退化')
-                    ws2.merge_cells(start_row=5, start_column=5+7*i, end_row=5, end_column=6+7*i)
-                else:
-                    self.write_col_to_excel(ws2, self.data_strength_degradation[i][0], 5, 5+7*i)
-                    self.write_col_to_excel(ws2, self.data_strength_degradation[i][1], 5, 6+7*i)
-            for row in ws2.iter_rows():
-                for cell in row:
-                    cell.alignment = Alignment(horizontal='center', vertical='center')
-            # 3 耗能指标&残余变形
-            ws3 = wb.create_sheet('耗能指标&其他', 2)
-            ws3.cell(row=1, column=1, value='单圈耗能')
-            ws3.cell(row=1, column=3, value='累积耗能')
-            ws3.cell(row=1, column=5, value='等效粘滞阻尼系数')
-            ws3.cell(row=1, column=7, value='所有骨架点')
-            ws3.cell(row=1, column=9, value='残余变形')
-            ws3.merge_cells(start_row=1, start_column=1, end_row=1, end_column=2)
-            ws3.merge_cells(start_row=1, start_column=3, end_row=1, end_column=4)
-            ws3.merge_cells(start_row=1, start_column=5, end_row=1, end_column=6)
-            ws3.merge_cells(start_row=1, start_column=7, end_row=1, end_column=8)
-            ws3.merge_cells(start_row=1, start_column=9, end_row=1, end_column=11)
-            ws3.cell(row=2, column=1, value='cycle')
-            ws3.cell(row=2, column=2, value='Es')
-            ws3.cell(row=2, column=3, value='cycle')
-            ws3.cell(row=2, column=4, value='Ea')
-            ws3.cell(row=2, column=5, value='cycle')
-            ws3.cell(row=2, column=6, value='zeta')
-            ws3.cell(row=2, column=7, value='u')
-            ws3.cell(row=2, column=8, value='F')
-            ws3.cell(row=2, column=9, value='cycle')
-            ws3.cell(row=2, column=10, value='+')
-            ws3.cell(row=2, column=11, value='-')
-            self.write_col_to_excel(ws3, np.arange(0, len(self.Es), 1), 3, 1)
-            self.write_col_to_excel(ws3, self.Es, 3, 2)
-            self.write_col_to_excel(ws3, np.arange(0, len(self.Ea), 1), 3, 3)
-            self.write_col_to_excel(ws3, self.Ea, 3, 4)
-            self.write_col_to_excel(ws3, np.arange(0, len(self.zeta), 1), 3, 5)
-            self.write_col_to_excel(ws3, self.zeta, 3, 6)
-            self.write_col_to_excel(ws3, self.gujia_u, 3, 7)
-            self.write_col_to_excel(ws3, self.gujia_F, 3, 8)
-            data = np.zeros((len(self.residual_pos), 3))
-            data[:, 0], data[:, 1], data[:, 2] = np.arange(1, len(self.residual_pos) + 1, 1), self.residual_pos, self.residual_neg
-            self.write_col_to_excel(ws3, np.array(data[:, 0]), 3, 9)
-            self.write_col_to_excel(ws3, np.array(data[:, 1]), 3, 10)
-            self.write_col_to_excel(ws3, np.array(data[:, 2]), 3, 11)
-            for row in ws3.iter_rows():
-                for cell in row:
-                    cell.alignment = Alignment(horizontal='center', vertical='center')
-            # 4 各圈滞回环
-            ws4 = wb.create_sheet('各圈滞回环', 3)
-            for i, (u_loop, F_loop) in enumerate(zip(self.u_loops, self.F_loops)):
-                ws4.cell(row=1, column=1+i*2, value=f'第{i+1}圈')
-                ws4.cell(row=2, column=1+i*2, value='u')
-                ws4.cell(row=2, column=2+i*2, value='F')
-                ws4.merge_cells(start_row=1, start_column=1+i*2, end_row=1, end_column=2+i*2)
-                self.write_col_to_excel(ws4, u_loop, 3, 1+i*2)
-                self.write_col_to_excel(ws4, F_loop, 3, 2+i*2)
-            for row in ws4.iter_rows():
-                for cell in row:
-                    cell.alignment = Alignment(horizontal='center', vertical='center')
-            # 导出
-            try:
-                wb.save(f'{output_file}/数据汇总.xlsx')
-                self.ui.pushButton_24.setText('导出所有数据')
-                self.ui.pushButton_24.setEnabled(True)
-                return True
-            except:
-                QMessageBox.warning(self, '警告', '无法导出excel，若正在打开excel请关闭。')
-                self.ui.pushButton_24.setText('导出所有数据')
-                self.ui.pushButton_24.setEnabled(True)
-                return False
+        # 导出
+        try:
+            wb.save(f'{output_file}/数据汇总.xlsx')
+            self.ui.pushButton_24.setText('导出所有数据')
+            self.ui.pushButton_24.setEnabled(True)
+            return True
+        except:
+            QMessageBox.warning(self, '警告', '无法导出excel，若正在打开excel请关闭。')
+            self.ui.pushButton_24.setText('导出所有数据')
+            self.ui.pushButton_24.setEnabled(True)
+            return False
 
-    def write_col_to_excel(self, ws, data, row, col):
+    @staticmethod
+    def write_col_to_excel(ws, data, row, col):
         # 写入一列数据到excel
         for i, val in enumerate(data):
             ws.cell(row=row+i, column=col, value=val)
@@ -1400,20 +1549,20 @@ class WinData(QDialog):
             super().keyPressEvent(event)
 
     def data_export(self):
-        if MainWin.ok6:
-            fileName, _ = QFileDialog.getSaveFileName(self, "保存", self.content, "文本文档 (*.txt)")
-            if fileName:
-                np.savetxt(fileName, self.data)
-                QMessageBox.information(self, '提示', f'数据已保存至{fileName}')
-        else:
+        if not MainWin.ok6:
             QMessageBox.warning(self, '警告', '无数据！')
+            return
+        fileName, _ = QFileDialog.getSaveFileName(self, "保存", self.content, "文本文档 (*.txt)")
+        if fileName:
+            np.savetxt(fileName, self.data)
+            QMessageBox.information(self, '提示', f'数据已保存至{fileName}')
 
     def data_copy(self):
-        if MainWin.ok6:
-            QApplication.clipboard().setText("\n".join(["\t".join(map(str, row)) for row in self.data]))
-            QMessageBox.information(self, '提示', '已复制。')
-        else:
+        if not MainWin.ok6:
             QMessageBox.warning(self, '警告', '无数据！')
+            return
+        QApplication.clipboard().setText("\n".join(["\t".join(map(str, row)) for row in self.data]))
+        QMessageBox.information(self, '提示', '已复制。')
 
 # ------------------------------------------------ WinAbout -------------------------------------------------
 
