@@ -166,3 +166,5 @@ dict/
 test_data/
 Pipfile
 Pipfile.lock
+*.lock
+*.toml
