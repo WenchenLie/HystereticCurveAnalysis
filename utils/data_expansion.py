@@ -65,6 +65,6 @@ def linear_interpolation1(
     """
     d_add = np.zeros((n - 1, n_col))
     for i in range(1, n):
-        line = (ls_b - ls_a) * i / n
+        line = ls_a + (ls_b - ls_a) * i / n
         d_add[i - 1, :] = line
     return d_add
