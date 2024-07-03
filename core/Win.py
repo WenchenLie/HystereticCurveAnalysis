@@ -1325,8 +1325,6 @@ class MainWin(QMainWindow):
             os.mkdir(f'{output_file}/各圈滞回环')
         for i, (u_loop, F_loop) in enumerate(zip(self.u_loops, self.F_loops)):
             np.savetxt(f'{output_file}/各圈滞回环/第{i+1}圈滞回环.txt', np.column_stack((u_loop, F_loop)))
-        if MainWin.d_import:
-            np.savetxt(f'附加数据.txt', MainWin.d7_1)
         export_result = self.creat_excel(output_file)
         if export_result:
             QMessageBox.information(self, '提示', '已导出所有数据！')
