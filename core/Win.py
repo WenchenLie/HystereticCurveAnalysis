@@ -24,8 +24,8 @@ from ui.WinHelp import Ui_WinHelp
 
 
 class MainWin(QMainWindow):
-    Version = 'V4.1'
-    date = '2024.7.3'
+    Version = 'V4.2'
+    date = '2024.7.11'
     u1, u2, u3, u4, u5, u6, u7, u7_1 = None, None, None, None, None, None, None, None  # 位移数据
     F1, F2, F3, F4, F5, F6, F7, u7_1 = None, None, None, None, None, None, None, None  # 力数据
     d1, d2, d3, d4, d5, d6, d7, d7_1 = None, None, None, None, None, None, None, None  # 附加数据，ndarray，将随位移和力一同处理
@@ -1325,6 +1325,12 @@ class MainWin(QMainWindow):
             os.mkdir(f'{output_file}/各圈滞回环')
         for i, (u_loop, F_loop) in enumerate(zip(self.u_loops, self.F_loops)):
             np.savetxt(f'{output_file}/各圈滞回环/第{i+1}圈滞回环.txt', np.column_stack((u_loop, F_loop)))
+        np.savetxt(f'{output_file}/附加数据.txt', MainWin.d7_1)
+        self.pg7.grab().save(f'{output_file}/骨架点.png', quality=100)
+        self.pg8.grab().save(f'{output_file}/单圈耗能.png', quality=100)
+        self.pg9.grab().save(f'{output_file}/累积耗能.png', quality=100)
+        self.pg10.grab().save(f'{output_file}/等效黏滞阻尼系数.png', quality=100)
+        self.pg11.grab().save(f'{output_file}/滞回曲线.png', quality=100)
         export_result = self.creat_excel(output_file)
         if export_result:
             QMessageBox.information(self, '提示', '已导出所有数据！')
