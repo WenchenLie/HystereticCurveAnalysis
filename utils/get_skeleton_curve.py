@@ -50,6 +50,7 @@ def get_skeleton_curve_1(
     skt_u, skt_F, skt_d = np.array([]), np.array([]), np.zeros((0, gujia_d.shape[1]))
     for i in N:
         try:
+            gujia_u[2 * i + 1]  # 先执行语句捕获异常，否则会导致skt_u和skt_F长度不一致
             skt_u = np.append(skt_u, gujia_u[2 * i])
             skt_u = np.append(skt_u, gujia_u[2 * i + 1])
             skt_F = np.append(skt_F, gujia_F[2 * i])

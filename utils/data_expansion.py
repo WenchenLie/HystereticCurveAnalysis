@@ -13,17 +13,24 @@ def data_expansion(u: list, F: list, d: np.ndarray, min_du: float
     Returns:
         tuple[np.ndarray, np.ndarray]: 扩充后的位移序列
     """
-    u_new, F_new, d_new = np.array([u[0]]), np.array([F[0]]), np.array(d[0], ndmin=2)
+    d_list = d.tolist()
+    u_new, F_new, d_new = [u[0]], [F[0]], [d_list[0]]
     for i in range(1, len(u)):
         P1, P2 = (u_new[-1], F_new[-1]), (u[i], F[i])
         n = int(abs((u[i] - u_new[-1]) / min_du)) + 1
         if n > 1:
-            u_new = np.append(u_new, linear_interpolation(P1, P2, n)[0])
-            F_new = np.append(F_new, linear_interpolation(P1, P2, n)[1])
-            d_new = np.append(d_new, linear_interpolation1(d_new[-1], d[i], n, d.shape[1]), axis=0)
-        u_new = np.append(u_new, u[i])
-        F_new = np.append(F_new, F[i])
-        d_new = np.append(d_new, d[i, np.newaxis], axis=0)
+            u_new.extend(linear_interpolation(P1, P2, n)[0])
+            F_new.extend(linear_interpolation(P1, P2, n)[1])
+            d_new.extend(linear_interpolation1(d_new[-1], d[i], n, d.shape[1]))
+        u_new.append(u[i])
+        F_new.append(F[i])
+        d_new.append(d_list[i])
+    else:
+        u_new = np.array(u_new)
+        F_new = np.array(F_new)
+        d_new = np.array(d_new)
+        if d_new.ndim == 1:
+            d_new.resize(len(d_new), 1)
     return u_new, F_new, d_new
 
 def linear_interpolation(P1: tuple[float, float], P2: tuple[float, float], n: int
@@ -51,7 +58,7 @@ def linear_interpolation1(
         ls_b: np.ndarray,
         n: int,
         n_col: int
-    ) -> np.ndarray:
+    ) -> list:
     """线性插值函数（n为分割段数）
 
     Args:
@@ -61,10 +68,10 @@ def linear_interpolation1(
         n_col (int): 附属数据列数
 
     Returns:
-        np.ndarray: 要补充的附属数据的二维数组
+        list: 要补充的附属数据的二维数组
     """
     d_add = np.zeros((n - 1, n_col))
     for i in range(1, n):
         line = ls_a + (ls_b - ls_a) * i / n
         d_add[i - 1, :] = line
-    return d_add
+    return d_add.tolist()

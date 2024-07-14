@@ -5,7 +5,7 @@ import openpyxl as px
 from openpyxl.styles import Alignment
 import pyqtgraph as pg
 from PyQt5.QtGui import QIntValidator, QFont, QColor
-from PyQt5.QtCore import Qt, QPoint, QCoreApplication
+from PyQt5.QtCore import Qt, QTimer, QPoint, QCoreApplication, QThread, pyqtSignal
 from PyQt5.QtWidgets import QApplication, QMessageBox, QFileDialog, QDialog, QTableWidgetItem, QMainWindow, QMenu, QTableWidgetItem, QHeaderView
 
 from utils.get_turning_point import get_turning_point
@@ -24,8 +24,8 @@ from ui.WinHelp import Ui_WinHelp
 
 
 class MainWin(QMainWindow):
-    Version = 'V4.2'
-    date = '2024.7.11'
+    Version = 'V4.3'
+    date = '2024.7.15'
     u1, u2, u3, u4, u5, u6, u7, u7_1 = None, None, None, None, None, None, None, None  # 位移数据
     F1, F2, F3, F4, F5, F6, F7, u7_1 = None, None, None, None, None, None, None, None  # 力数据
     d1, d2, d3, d4, d5, d6, d7, d7_1 = None, None, None, None, None, None, None, None  # 附加数据，ndarray，将随位移和力一同处理
@@ -281,6 +281,7 @@ class MainWin(QMainWindow):
         self.ui.label_13.setText(f'位移数据：{u_file_dir}')
         MainWin.u1 = u1_temp
         MainWin.u_import = True
+        print(f'导入位移，长度: {len(u1_temp)}')
         if not self.MainWin_plot():
             return 0
         self.data_statistics()
@@ -301,6 +302,7 @@ class MainWin(QMainWindow):
             return 0
         MainWin.F1 = F1_temp
         MainWin.F_import = True
+        print(f'导入力，长度: {len(F1_temp)}')
         self.ui.label_14.setText(f'力数据：{F_file_dir}')
         if not self.MainWin_plot():
             return 0
@@ -331,6 +333,7 @@ class MainWin(QMainWindow):
         self.ui.label_14.setText(f'力数据：{uF_file_dir}')
         MainWin.u1, MainWin.F1 = u1_temp, F1_temp
         MainWin.u_import, MainWin.F_import = True, True
+        print(f'导入滞回曲线，长度: {len(u1_temp)}')
         if not self.MainWin_plot():
             return 0
         self.data_statistics()
@@ -361,6 +364,7 @@ class MainWin(QMainWindow):
         self.ui.label_62.setText(f'附加数据：{d_file_dir}')
         MainWin.d1 = data
         MainWin.d_import = True
+        print(f'导入附加数据，长度: {data.shape}')
 
     def plot_protocal(self, pg_i, x, y):
         """绘制加载制度"""
@@ -433,14 +437,14 @@ class MainWin(QMainWindow):
     def init_d(self):
         if not MainWin.u_import:
             return
-        MainWin.d1 = np.zeros(len(MainWin.u1))
-        MainWin.d2 = np.zeros(len(MainWin.u1))
-        MainWin.d3 = np.zeros(len(MainWin.u1))
-        MainWin.d4 = np.zeros(len(MainWin.u1))
-        MainWin.d5 = np.zeros(len(MainWin.u1))
-        MainWin.d6 = np.zeros(len(MainWin.u1))
-        MainWin.d7 = np.zeros(len(MainWin.u1))
-        MainWin.d7_1 = np.zeros(len(MainWin.u1))
+        MainWin.d1 = np.zeros((len(MainWin.u1), 1))
+        MainWin.d2 = np.zeros((len(MainWin.u1), 1))
+        MainWin.d3 = np.zeros((len(MainWin.u1), 1))
+        MainWin.d4 = np.zeros((len(MainWin.u1), 1))
+        MainWin.d5 = np.zeros((len(MainWin.u1), 1))
+        MainWin.d6 = np.zeros((len(MainWin.u1), 1))
+        MainWin.d7 = np.zeros((len(MainWin.u1), 1))
+        MainWin.d7_1 = np.zeros((len(MainWin.u1), 1))
 
     def tab1_finished(self):
         self.tab2_start()
@@ -467,16 +471,24 @@ class MainWin(QMainWindow):
         """删除重复点"""
         if not MainWin.ok1:
             return
-        self.u2_temp, self.F2_temp, self.d2_temp = np.array([MainWin.u1[0]]), np.array([MainWin.F1[0]]), np.array([MainWin.d1[0]], ndmin=2)
+        self.u2_temp, self.F2_temp, self.d2_temp = [MainWin.u1[0]], [MainWin.F1[0]], [MainWin.d1.tolist()[0]]
         if not (self.u2_temp[0] == 0 and self.F2_temp[0] == 0):
             if self.ui.checkBox_4.isChecked():
-                self.u2_temp, self.F2_temp = np.insert(self.u2_temp, 0, 0), np.insert(self.F2_temp, 0, 0)
-                self.d2_temp = np.insert(self.d2_temp, 0, self.d2_temp[0], 0)
+                self.u2_temp.insert(0, 0)
+                self.F2_temp.insert(0, 0)
+                self.d2_temp.insert(0, [0] * MainWin.d1.shape[1])
+        d1_list = MainWin.d1.tolist()
         for i in range(1, len(MainWin.u1)):
             if MainWin.u1[i] != self.u2_temp[-1]:
-                self.u2_temp = np.append(self.u2_temp, MainWin.u1[i])
-                self.F2_temp = np.append(self.F2_temp, MainWin.F1[i])
-                self.d2_temp = np.append(self.d2_temp, np.array(MainWin.d1[i], ndmin=2), axis=0)
+                self.u2_temp.append(MainWin.u1[i])
+                self.F2_temp.append(MainWin.F1[i])
+                self.d2_temp.append(d1_list[i])
+        else:
+            self.u2_temp = np.array(self.u2_temp)
+            self.F2_temp = np.array(self.F2_temp)
+            self.d2_temp = np.array(self.d2_temp)
+            if self.d2_temp.ndim == 1:
+                self.d2_temp.resize(len(self.d2_temp), 1)
         self.pg4.clear()
         self.pg4.plot(np.arange(0, len(self.u2_temp), 1), self.u2_temp, pen=self.pen1)
         self.pg4.autoRange()
@@ -689,7 +701,7 @@ class MainWin(QMainWindow):
             MainWin.u4, MainWin.F4, MainWin.d4 = self.u4_temp, self.F4_temp, self.d4_temp
             MainWin.ok4 = True
             print('tab4 不扩充')
-        self.tab5_finished()
+        self.tab5_start()
 
     def clear_tab4(self):
         MainWin.u4, MainWin.F4, MainWin.d4 = None, None, None
@@ -703,7 +715,7 @@ class MainWin(QMainWindow):
 
     # --------------------------------------------------- tab 5 ---------------------------------------------------
 
-    def tab5_finished(self):
+    def tab5_start(self):
         if self.ui.checkBox_2.isChecked():
             self.curve_smooth()
         else:
@@ -1295,6 +1307,10 @@ class MainWin(QMainWindow):
         _translate = QCoreApplication.translate
         self.WinData.setWindowTitle(_translate("win_getData", "附加数据"))
         for i in range(n_col):
+            if i >= 2:
+                self.WinData.ui_data.tableWidget.insertColumn(i)
+                item = QTableWidgetItem()
+                self.WinData.ui_data.tableWidget.setHorizontalHeaderItem(i, item)
             self.WinData.ui_data.tableWidget.horizontalHeaderItem(i).setText(_translate("win_getData", f"({i+1})"))
         if n_col == 1:
             self.WinData.ui_data.tableWidget.removeColumn(1)
@@ -1310,11 +1326,14 @@ class MainWin(QMainWindow):
         if not MainWin.ok7_1:
             QMessageBox.warning(self, '警告', '没有数据！')
             return
-        self.ui.pushButton_24.setText('正在导出...')
-        self.ui.pushButton_24.setEnabled(False)
+        self.buttom_off()
         output_file = QFileDialog.getExistingDirectory(self, '选择保存路径文件夹')
         if not output_file:
+            self.buttom_on()
             return 0
+        self.export_all_data_(output_file)
+        
+    def export_all_data_(self, output_file: str):
         np.savetxt(f'{output_file}/滞回曲线.txt', np.column_stack((MainWin.u7_1, MainWin.F7_1)))
         np.savetxt(f'{output_file}/骨架点.txt', np.column_stack((self.gujia_u, self.gujia_F)))
         np.savetxt(f'{output_file}/单圈耗能.txt', self.Es)
@@ -1326,10 +1345,15 @@ class MainWin(QMainWindow):
         for i, (u_loop, F_loop) in enumerate(zip(self.u_loops, self.F_loops)):
             np.savetxt(f'{output_file}/各圈滞回环/第{i+1}圈滞回环.txt', np.column_stack((u_loop, F_loop)))
         np.savetxt(f'{output_file}/附加数据.txt', MainWin.d7_1)
+        self.pg7.autoRange()
         self.pg7.grab().save(f'{output_file}/骨架点.png', quality=100)
+        self.pg8.autoRange()
         self.pg8.grab().save(f'{output_file}/单圈耗能.png', quality=100)
+        self.pg9.autoRange()
         self.pg9.grab().save(f'{output_file}/累积耗能.png', quality=100)
+        self.pg10.autoRange()
         self.pg10.grab().save(f'{output_file}/等效黏滞阻尼系数.png', quality=100)
+        self.pg11.autoRange()
         self.pg11.grab().save(f'{output_file}/滞回曲线.png', quality=100)
         export_result = self.creat_excel(output_file)
         if export_result:
@@ -1462,13 +1486,11 @@ class MainWin(QMainWindow):
         # 导出
         try:
             wb.save(f'{output_file}/数据汇总.xlsx')
-            self.ui.pushButton_24.setText('导出所有数据')
-            self.ui.pushButton_24.setEnabled(True)
+            self.buttom_on()
             return True
         except:
             QMessageBox.warning(self, '警告', '无法导出excel，若正在打开excel请关闭。')
-            self.ui.pushButton_24.setText('导出所有数据')
-            self.ui.pushButton_24.setEnabled(True)
+            self.buttom_on()
             return False
 
     @staticmethod
@@ -1476,6 +1498,14 @@ class MainWin(QMainWindow):
         # 写入一列数据到excel
         for i, val in enumerate(data):
             ws.cell(row=row+i, column=col, value=val)
+
+    def buttom_on(self):
+        self.ui.pushButton_24.setText('导出所有数据')
+        self.ui.pushButton_24.setEnabled(True)
+
+    def buttom_off(self):
+        self.ui.pushButton_24.setText('正在导出...')
+        self.ui.pushButton_24.setEnabled(False)
 
     def clear_tab8(self):
         self.ui.lineEdit_14.clear()
@@ -1494,7 +1524,21 @@ class MainWin(QMainWindow):
     def show_WinHelp(self):
         self.WinHelp = WinHelp()
         self.WinHelp.exec_()
+
+    # ---------------------------------------------- ExportDataWorker ----------------------------------------------
         
+class ExportDataWorker(QThread):
+    signal_buttom_on = pyqtSignal()
+    signal_buttom_off = pyqtSignal()
+
+    def __init__(self, win: MainWin, output_file):
+        super().__init__()
+        self.win = win
+        self.output_file = output_file
+    
+    def run(self):
+        self.export_all_data(self.output_file)
+
     # ------------------------------------------------- WinData ---------------------------------------------------
 
 class WinData(QDialog):

@@ -21,9 +21,10 @@ def data_monotonisation(u: np.ndarray, F: np.ndarray, d: np.ndarray, tag: list[i
         u_seg, F_seg, d_seg = u[tag1: tag2+1], F[tag1: tag2+1], d[tag1: tag2+1]
         u_seg_new, F_seg_new, d_seg_new = [u_seg[0]], [F_seg[0]], d_seg[0, np.newaxis]
         for j in range(1, len(u_seg) - 1):
-            u_sublist = get_sublist(u_seg, j, 0.05)
-            if abs(u_seg[j] - np.mean(u_sublist)) / abs(np.mean(u_sublist)) > 1:
-                continue  # 如果当前位移点与前后5%的点的均值的相对误差超过1，则跳过
+            # TODO: 识别位移异常值
+            # u_sublist = get_sublist(u_seg, j, 0.05)
+            # if abs(u_seg[j] - np.mean(u_sublist)) / abs(np.mean(u_sublist)) > 1:
+            #     continue  # 如果当前位移点与前后5%的点的均值的相对误差超过1，则跳过
             if ((load > 0) and (u_seg[j] > max(u_seg_new))) or ((load < 0) and (u_seg[j] < min(u_seg_new))):
                 u_seg_new.append(u_seg[j])
                 F_seg_new.append(F_seg[j])
