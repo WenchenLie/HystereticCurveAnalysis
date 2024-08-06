@@ -2869,8 +2869,8 @@
                </property>
               </widget>
              </item>
-             <item row="1" column="1">
-              <widget class="QPushButton" name="pushButton_20">
+             <item row="0" column="1">
+              <widget class="QPushButton" name="pushButton_18">
                <property name="minimumSize">
                 <size>
                  <width>0</width>
@@ -2878,7 +2878,7 @@
                 </size>
                </property>
                <property name="text">
-                <string>累积耗能</string>
+                <string>骨架点</string>
                </property>
               </widget>
              </item>
@@ -2908,19 +2908,6 @@
                </property>
               </widget>
              </item>
-             <item row="0" column="1">
-              <widget class="QPushButton" name="pushButton_18">
-               <property name="minimumSize">
-                <size>
-                 <width>0</width>
-                 <height>30</height>
-                </size>
-               </property>
-               <property name="text">
-                <string>骨架点</string>
-               </property>
-              </widget>
-             </item>
              <item row="2" column="1">
               <widget class="QPushButton" name="pushButton_22">
                <property name="minimumSize">
@@ -2934,7 +2921,20 @@
                </property>
               </widget>
              </item>
-             <item row="3" column="0">
+             <item row="1" column="1">
+              <widget class="QPushButton" name="pushButton_20">
+               <property name="minimumSize">
+                <size>
+                 <width>0</width>
+                 <height>30</height>
+                </size>
+               </property>
+               <property name="text">
+                <string>累积耗能</string>
+               </property>
+              </widget>
+             </item>
+             <item row="3" column="1">
               <widget class="QPushButton" name="pushButton_35">
                <property name="minimumSize">
                 <size>
@@ -2944,6 +2944,19 @@
                </property>
                <property name="text">
                 <string>附加数据</string>
+               </property>
+              </widget>
+             </item>
+             <item row="3" column="0">
+              <widget class="QPushButton" name="pushButton_37">
+               <property name="minimumSize">
+                <size>
+                 <width>0</width>
+                 <height>30</height>
+                </size>
+               </property>
+               <property name="text">
+                <string>承载力</string>
                </property>
               </widget>
              </item>

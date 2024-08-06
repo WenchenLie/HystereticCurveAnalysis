@@ -172,6 +172,7 @@ class MainWin(QMainWindow):
         self.ui.pushButton_20.clicked.connect(self.data_Ea)
         self.ui.pushButton_21.clicked.connect(self.data_zeta)
         self.ui.pushButton_22.clicked.connect(self.data_residual_deformation)
+        self.ui.pushButton_37.clicked.connect(self.data_strength)
         self.ui.pushButton_35.clicked.connect(self.data_additional_data)
         self.ui.pushButton_24.clicked.connect(self.export_all_data)
         self.pg11 = self.replace_to_pyqtgraph(self.ui.graphicsView_11, self.ui.verticalLayout_16, 2)
@@ -1290,6 +1291,31 @@ class MainWin(QMainWindow):
             item_1 = QTableWidgetItem(str(i + 1))
             item_2 = QTableWidgetItem(str(round(self.residual_pos[i], 5)))
             item_3 = QTableWidgetItem(str(round(self.residual_neg[i], 5)))
+            self.WinData.ui_data.tableWidget.setItem(i, 0, item_1)
+            self.WinData.ui_data.tableWidget.setItem(i, 1, item_2)
+            self.WinData.ui_data.tableWidget.setItem(i, 2, item_3)
+        self.WinData.exec_()
+        del self.WinData
+
+    def data_strength(self):
+        if not MainWin.ok7_1:
+            QMessageBox.warning(self, '警告', '没有数据！')
+            return
+        data_maxF = [max(loop) for loop in self.F_loops]
+        data_minF = [min(loop) for loop in self.F_loops]
+        data = np.zeros((len(data_maxF), 3))
+        data[:, 0], data[:, 1], data[:, 2] = np.arange(1, len(data_maxF) + 1, 1), data_maxF, data_minF
+        self.WinData = WinData(data, content='承载力', isResidual=True)
+        _translate = QCoreApplication.translate
+        self.WinData.setWindowTitle(_translate("win_getData", "承载力"))
+        self.WinData.ui_data.tableWidget.horizontalHeaderItem(0).setText(_translate("win_getData", "循环周数"))
+        self.WinData.ui_data.tableWidget.horizontalHeaderItem(1).setText(_translate("win_getData", "正向最大承载力"))
+        self.WinData.ui_data.tableWidget.horizontalHeaderItem(2).setText(_translate("win_getData", "负向最大承载力"))
+        self.WinData.ui_data.tableWidget.setRowCount(len(data_maxF))
+        for i in range(len(data_maxF)):
+            item_1 = QTableWidgetItem(str(i + 1))
+            item_2 = QTableWidgetItem(str(round(data_maxF[i], 5)))
+            item_3 = QTableWidgetItem(str(round(data_minF[i], 5)))
             self.WinData.ui_data.tableWidget.setItem(i, 0, item_1)
             self.WinData.ui_data.tableWidget.setItem(i, 1, item_2)
             self.WinData.ui_data.tableWidget.setItem(i, 2, item_3)
