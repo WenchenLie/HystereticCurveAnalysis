@@ -24,8 +24,8 @@ from ui.WinHelp import Ui_WinHelp
 
 
 class MainWin(QMainWindow):
-    Version = 'V4.3'
-    date = '2024.7.15'
+    Version = 'V4.4'
+    date = '2024.8.6'
     u1, u2, u3, u4, u5, u6, u7, u7_1 = None, None, None, None, None, None, None, None  # 位移数据
     F1, F2, F3, F4, F5, F6, F7, u7_1 = None, None, None, None, None, None, None, None  # 力数据
     d1, d2, d3, d4, d5, d6, d7, d7_1 = None, None, None, None, None, None, None, None  # 附加数据，ndarray，将随位移和力一同处理
@@ -934,6 +934,9 @@ class MainWin(QMainWindow):
         else:
             current_loop_u, current_loop_F = self.u_loops[idx - 1], self.F_loops[idx - 1]
             self.pg12.plot(current_loop_u, current_loop_F, pen=self.pen1)
+            self.pg12.plot([float(self.residual_pos[idx - 1])], [0], pen=None, symbolBrush='green', symbol='o', symbolSize=10)
+            self.pg12.plot([float(self.residual_neg[idx - 1])], [0], pen=None, symbolBrush='green', symbol='o', symbolSize=10)
+            self.pg12.plot(self.gujia_u[2 * idx - 2: 2 * idx], self.gujia_F[2 * idx - 2: 2 * idx], pen=None, symbolBrush='red', symbol='o', symbolSize=10)
             self.pg12.autoRange()
             self.ui.lineEdit_19.setText(str(round(max(current_loop_u), 5)))
             self.ui.lineEdit_20.setText(str(round(min(current_loop_u), 5)))
@@ -1341,11 +1344,15 @@ class MainWin(QMainWindow):
         np.savetxt(f'{output_file}/累积耗能.txt', self.Ea)
         np.savetxt(f'{output_file}/等效粘滞阻尼系数.txt', self.zeta)
         np.savetxt(f'{output_file}/残余变形.txt', np.column_stack((np.arange(0, len(self.residual_pos), 1), self.residual_pos, self.residual_neg)))
+        data_maxF = [max(loop) for loop in self.F_loops]
+        data_minF = [min(loop) for loop in self.F_loops]
+        np.savetxt(f'{output_file}/承载力.txt', np.column_stack((np.arange(0, len(data_maxF), 1), data_minF, data_maxF)))
         if not os.path.exists(f'{output_file}/各圈滞回环'):
             os.mkdir(f'{output_file}/各圈滞回环')
         for i, (u_loop, F_loop) in enumerate(zip(self.u_loops, self.F_loops)):
             np.savetxt(f'{output_file}/各圈滞回环/第{i+1}圈滞回环.txt', np.column_stack((u_loop, F_loop)))
-        np.savetxt(f'{output_file}/附加数据.txt', MainWin.d7_1)
+        if MainWin.d_import:
+            np.savetxt(f'{output_file}/附加数据.txt', MainWin.d7_1)
         self.pg7.autoRange()
         self.pg7.grab().save(f'{output_file}/骨架点.png', quality=100)
         self.pg8.autoRange()
@@ -1427,11 +1434,13 @@ class MainWin(QMainWindow):
         ws3.cell(row=1, column=5, value='等效粘滞阻尼系数')
         ws3.cell(row=1, column=7, value='所有骨架点')
         ws3.cell(row=1, column=9, value='残余变形')
+        ws3.cell(row=1, column=12, value='最大承载力')
         ws3.merge_cells(start_row=1, start_column=1, end_row=1, end_column=2)
         ws3.merge_cells(start_row=1, start_column=3, end_row=1, end_column=4)
         ws3.merge_cells(start_row=1, start_column=5, end_row=1, end_column=6)
         ws3.merge_cells(start_row=1, start_column=7, end_row=1, end_column=8)
         ws3.merge_cells(start_row=1, start_column=9, end_row=1, end_column=11)
+        ws3.merge_cells(start_row=1, start_column=12, end_row=1, end_column=14)
         ws3.cell(row=2, column=1, value='cycle')
         ws3.cell(row=2, column=2, value='Es')
         ws3.cell(row=2, column=3, value='cycle')
@@ -1443,6 +1452,9 @@ class MainWin(QMainWindow):
         ws3.cell(row=2, column=9, value='cycle')
         ws3.cell(row=2, column=10, value='+')
         ws3.cell(row=2, column=11, value='-')
+        ws3.cell(row=2, column=12, value='cycle')
+        ws3.cell(row=2, column=13, value='+')
+        ws3.cell(row=2, column=14, value='-')
         self.write_col_to_excel(ws3, np.arange(0, len(self.Es), 1), 3, 1)
         self.write_col_to_excel(ws3, self.Es, 3, 2)
         self.write_col_to_excel(ws3, np.arange(0, len(self.Ea), 1), 3, 3)
@@ -1456,6 +1468,11 @@ class MainWin(QMainWindow):
         self.write_col_to_excel(ws3, np.array(data[:, 0]), 3, 9)
         self.write_col_to_excel(ws3, np.array(data[:, 1]), 3, 10)
         self.write_col_to_excel(ws3, np.array(data[:, 2]), 3, 11)
+        self.write_col_to_excel(ws3, np.array(data[:, 0]), 3, 12)
+        data_maxF = [max(loop) for loop in self.F_loops]
+        data_minF = [min(loop) for loop in self.F_loops]
+        self.write_col_to_excel(ws3, data_maxF, 3, 13)
+        self.write_col_to_excel(ws3, data_minF, 3, 14)
         for row in ws3.iter_rows():
             for cell in row:
                 cell.alignment = Alignment(horizontal='center', vertical='center')
