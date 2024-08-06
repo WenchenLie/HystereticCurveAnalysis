@@ -476,7 +476,8 @@ class MainWin(QMainWindow):
             if self.ui.checkBox_4.isChecked():
                 self.u2_temp.insert(0, 0)
                 self.F2_temp.insert(0, 0)
-                self.d2_temp.insert(0, [0] * MainWin.d1.shape[1])
+                # self.d2_temp.insert(0, [0] * MainWin.d1.shape[1])
+                self.d2_temp.insert(0, MainWin.d1[0])
         d1_list = MainWin.d1.tolist()
         for i in range(1, len(MainWin.u1)):
             if MainWin.u1[i] != self.u2_temp[-1]:

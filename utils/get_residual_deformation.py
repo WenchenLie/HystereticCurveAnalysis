@@ -12,20 +12,22 @@ def get_residual_deformation(u_loop: np.ndarray, F_loop: np.ndarray) -> tuple[fl
         tuple[float, float]: 正向、负向的残余变形
     """
 
-    d_pos, d_neg = 0, 0
+    d_pos, d_neg = None, None
     for i in range(1, len(u_loop) - 1):
-        if F_loop[i] == 0 and u_loop[i] > 0:
-            d_pos = u_loop[i]
-            continue
-        elif F_loop[i] == 0 and u_loop[i] < 0:
-            d_neg = u_loop[i]
-            continue
-        elif F_loop[i] > 0 and F_loop[i + 1] < 0:
-            k = (F_loop[i + 1] - F_loop[i]) / (u_loop[i + 1] - u_loop[i])
-            d_pos = u_loop[i] - F_loop[i] / k
-            continue
-        elif F_loop[i] < 0 and F_loop[i + 1] > 0:
-            k = (F_loop[i + 1] - F_loop[i]) / (u_loop[i + 1] - u_loop[i])
-            d_neg = u_loop[i] - F_loop[i] / k
-            continue
+        if d_pos is not None and d_neg is not None:
+            break
+        ui, uj = u_loop[i], u_loop[i + 1]
+        Fi, Fj = F_loop[i], F_loop[i + 1]
+        if ui >= 0 and d_pos is None:
+            if Fi == 0:
+                d_pos = ui
+            elif Fi > 0 and Fj < 0:
+                d_pos = ui + (uj - ui) * (0 - Fi) / (Fj - Fi)
+        elif ui < 0 and d_neg is None:
+            if Fi == 0:
+                d_neg = ui
+            elif Fi < 0 and Fj > 0:
+                d_neg = ui + (uj - ui) * (0 - Fi) / (Fj - Fi)
+    d_pos = 0 if d_pos is None else d_pos
+    d_neg = 0 if d_neg is None else d_neg
     return d_pos, d_neg
