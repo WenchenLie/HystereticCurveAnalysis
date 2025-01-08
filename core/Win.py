@@ -5,7 +5,7 @@ import openpyxl as px
 from openpyxl.styles import Alignment
 import pyqtgraph as pg
 from PyQt5.QtGui import QIntValidator, QFont, QColor
-from PyQt5.QtCore import Qt, QTimer, QPoint, QCoreApplication, QThread, pyqtSignal
+from PyQt5.QtCore import Qt, QPoint, QCoreApplication, QThread, pyqtSignal
 from PyQt5.QtWidgets import QApplication, QMessageBox, QFileDialog, QDialog, QTableWidgetItem, QMainWindow, QMenu, QTableWidgetItem, QHeaderView
 
 from utils.get_turning_point import get_turning_point
@@ -24,8 +24,9 @@ from ui.WinHelp import Ui_WinHelp
 
 
 class MainWin(QMainWindow):
-    Version = 'V4.4'
-    date = '2024.8.6'
+    Version = 'V4.5'
+    date = '2023.9.7'
+    last_update = '2025.1.8'
     u1, u2, u3, u4, u5, u6, u7, u7_1 = None, None, None, None, None, None, None, None  # 位移数据
     F1, F2, F3, F4, F5, F6, F7, u7_1 = None, None, None, None, None, None, None, None  # 力数据
     d1, d2, d3, d4, d5, d6, d7, d7_1 = None, None, None, None, None, None, None, None  # 附加数据，ndarray，将随位移和力一同处理
@@ -746,7 +747,8 @@ class MainWin(QMainWindow):
         if not MainWin.ok4:
             return
         self.plot_no_smooth()
-        self.pg6.plot(np.arange(0, len(MainWin.u4), 1), self.F5_smooth, pen=self.pen2, name='after smoothing')
+        # self.pg6.plot(np.arange(0, len(MainWin.u4), 1), self.F5_smooth, pen=self.pen2, name='after smoothing')
+        self.pg6.plot(MainWin.u4, self.F5_smooth, pen=self.pen2, name='after smoothing')
         self.pg6.autoRange()
 
     def plot_no_smooth(self):
@@ -754,7 +756,7 @@ class MainWin(QMainWindow):
             return
         self.pg6.clear()
         self.pg6.addLegend()
-        self.pg6.plot(np.arange(0, len(MainWin.u4), 1), MainWin.F4, pen=self.pen1, name='before smoothing')
+        self.pg6.plot(MainWin.u4, MainWin.F4, pen=self.pen1, name='before smoothing')
         self.pg6.autoRange()
 
     def clear_plot_smooth(self):
@@ -1668,7 +1670,7 @@ class WinAbout(QDialog):
     def init_ui_about(self):
         # 替换日期及版本
         text = self.ui_WinAbout.label_3.text()
-        text = text.replace('Version', MainWin.Version)
+        text = text.replace('Version', f'{MainWin.Version} ({MainWin.last_update})')
         text = text.replace('data', MainWin.date)
         self.ui_WinAbout.label_3.setText(text)
 
