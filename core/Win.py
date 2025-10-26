@@ -1379,6 +1379,10 @@ class MainWin(QMainWindow):
             os.mkdir(f'{output_file}/各圈滞回环')
         for i, (u_loop, F_loop) in enumerate(zip(self.u_loops, self.F_loops)):
             np.savetxt(f'{output_file}/各圈滞回环/第{i+1}圈滞回环.txt', np.column_stack((u_loop, F_loop)))
+        if not os.path.exists(f'{output_file}/各圈附加数据'):
+            os.mkdir(f'{output_file}/各圈附加数据')
+        for i, d_loop in enumerate(self.d_loops):
+            np.savetxt(f'{output_file}/各圈附加数据/第{i+1}圈附加数据.txt', d_loop)
         if MainWin.d_import:
             np.savetxt(f'{output_file}/附加数据.txt', MainWin.d7_1)
         self.pg7.autoRange()
