@@ -704,7 +704,7 @@
       </widget>
       <widget class="QWidget" name="tab3">
        <attribute name="title">
-        <string>识别位移反向点</string>
+        <string>识别卸载点</string>
        </attribute>
        <layout class="QVBoxLayout" name="verticalLayout_26" stretch="0,0,1,0,0">
         <item>
@@ -716,7 +716,7 @@
            </size>
           </property>
           <property name="title">
-           <string>拖动滑条设置滑动窗口宽度以识别反向点</string>
+           <string>拖动滑条设置滑动窗口宽度以识别卸载点</string>
           </property>
           <layout class="QGridLayout" name="gridLayout_2">
            <item row="0" column="1">
@@ -977,7 +977,7 @@
             <item>
              <widget class="QLabel" name="label_33">
               <property name="text">
-               <string>位移序列及反向点：</string>
+               <string>位移序列及卸载点：</string>
               </property>
              </widget>
             </item>
@@ -997,7 +997,7 @@
             <item>
              <widget class="QLabel" name="label_60">
               <property name="text">
-               <string>若有多余反向点，可手动点选然后删除</string>
+               <string>若有多余卸载点，可手动点选然后删除</string>
               </property>
              </widget>
             </item>
@@ -1055,7 +1055,7 @@
            <enum>QFrame::Raised</enum>
           </property>
           <property name="text">
-           <string>注：采用滑动窗口算法来识别加载制度的反向点，通过调整自适应窗口的宽度来判断反向点是否识别正确，操作提示：（1）若前半部分的反向点有遗漏，则减小起始宽度；（2）若前半部分的反向点有多余，则增大起始宽度；（3）若后半部分的反向点有遗漏，则增大终止宽度；（4）若后半部分的反向点有多余，则减小终止宽度。</string>
+           <string>注：采用滑动窗口算法来识别加载制度的卸载点，通过调整自适应窗口的宽度来判断卸载点是否识别正确，操作提示：（1）若前半部分的卸载点有遗漏，则减小起始宽度；（2）若前半部分的卸载点有多余，则增大起始宽度；（3）若后半部分的卸载点有遗漏，则增大终止宽度；（4）若后半部分的卸载点有多余，则减小终止宽度。</string>
           </property>
           <property name="alignment">
            <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
@@ -1110,7 +1110,7 @@
               <item>
                <widget class="QCheckBox" name="checkBox_5">
                 <property name="text">
-                 <string>请务必保证反向点（以红色点标出）全部识别正确再进行下一步</string>
+                 <string>请务必保证卸载点（以红色点标出）全部识别正确再进行下一步</string>
                 </property>
                </widget>
               </item>
@@ -1600,7 +1600,7 @@
       </widget>
       <widget class="QWidget" name="tab6">
        <attribute name="title">
-        <string>骨架点&amp;耗能指标</string>
+        <string>骨架点&amp;&amp;耗能指标</string>
        </attribute>
        <layout class="QVBoxLayout" name="verticalLayout_21" stretch="0,0,1,0">
         <item>

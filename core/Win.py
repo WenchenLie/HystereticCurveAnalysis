@@ -24,9 +24,9 @@ from ui.WinHelp import Ui_WinHelp
 
 
 class MainWin(QMainWindow):
-    Version = 'V4.7'
+    Version = 'V4.7.1'
     date = '2023.9.7'
-    last_update = '2025.10.26'
+    last_update = '2025.10.31'
     u1, u2, u3, u4, u5, u6, u7, u7_1 = None, None, None, None, None, None, None, None  # 位移数据
     F1, F2, F3, F4, F5, F6, F7, u7_1 = None, None, None, None, None, None, None, None  # 力数据
     d1, d2, d3, d4, d5, d6, d7, d7_1 = None, None, None, None, None, None, None, None  # 附加数据，ndarray，将随位移和力一同处理
@@ -259,7 +259,7 @@ class MainWin(QMainWindow):
             except:
                 pass
 
-    # --------------------------------------------------- tab 1 ---------------------------------------------------
+    # --------------------------------------------------- tab 1 (导入数据) ---------------------------------------------------
 
     def get_disp(self):
         """点击 - 导入位移"""
@@ -453,7 +453,7 @@ class MainWin(QMainWindow):
 
     
 
-    # --------------------------------------------------- tab 2 ---------------------------------------------------
+    # --------------------------------------------------- tab 2 (删除重复点) ---------------------------------------------------
 
     def tab2_start(self):
         self.plot2_old()
@@ -514,7 +514,7 @@ class MainWin(QMainWindow):
         self.pg4.clear()
         self.MyDel('self.u2_temp', 'self.F2_temp')
 
-    # --------------------------------------------------- tab 3 ---------------------------------------------------
+    # --------------------------------------------------- tab 3 (识别位移反向点) ---------------------------------------------------
 
     def tab3_start(self):
         self.plot_turning_points()
@@ -643,7 +643,7 @@ class MainWin(QMainWindow):
                    'self.idx_point_selected', 'self.x_point_selected', 'self.y_point_selected',\
                     'self.line1', 'self.line2', 'self.line3')
 
-    # --------------------------------------------------- tab 4 ---------------------------------------------------
+    # --------------------------------------------------- tab 4 (数据密度扩充&单调化) ---------------------------------------------------
 
     def tab4_start(self):
         self.tag = self.current_tag
@@ -716,7 +716,7 @@ class MainWin(QMainWindow):
         self.ui.label_28.setText('扩充后数据长度：不扩充')
         self.MyDel('self.u4_temp', 'self.F4_temp', 'self.u4_temp_expan', 'self.F4_temp_expan')
 
-    # --------------------------------------------------- tab 5 ---------------------------------------------------
+    # --------------------------------------------------- tab 5 (曲线平滑) ---------------------------------------------------
 
     def tab5_start(self):
         if self.ui.checkBox_2.isChecked():
@@ -788,7 +788,7 @@ class MainWin(QMainWindow):
         self.pg6.clear()
         self.MyDel('self.F5_smooth')
 
-    # --------------------------------------------------- tab 6 ---------------------------------------------------
+    # --------------------------------------------------- tab 6 (骨架点&耗能指标) ---------------------------------------------------
 
     def tab6_start(self):
         self.get_loops_and_energy()
@@ -805,7 +805,7 @@ class MainWin(QMainWindow):
             method = 'a'  # 滞回环分圈方法，a-端点为零位移点，b-端点为反向点
         else:
             method = 'b'
-        self.u_loops, self.F_loops, self.d_loops, self.length_with_skip = loops_division(MainWin.u5, MainWin.F5, MainWin.d5, skip=skip, method=method)
+        self.u_loops, self.F_loops, self.d_loops, self.length_with_skip, self.indices = loops_division(MainWin.u5, MainWin.F5, MainWin.d5, skip=skip, method=method)
         # 提取骨架点
         if self.ui.radioButton_3.isChecked():
             skeleton_method = 1
@@ -868,10 +868,12 @@ class MainWin(QMainWindow):
         self.pg8.clear()
         self.pg9.clear()
         self.pg10.clear()
-        self.MyDel('self.u_loops', 'self.F_loops', 'self.length_with_skip', 'self.gujia_u', 'self.gujia_F', 'self.Es', 'self.Ea',\
-                   'self.zeta', 'self.residual_pos', 'self.residual_neg')
+        self.MyDel('self.u_loops', 'self.F_loops', 'self.d_loops', 'self.indices',
+                   'self.length_with_skip', 'self.gujia_u', 'self.gujia_F',
+                   'self.Es', 'self.Ea', 'self.zeta', 'self.residual_pos',
+                   'self.residual_neg')
 
-    # --------------------------------------------------- tab 7 ---------------------------------------------------
+    # --------------------------------------------------- tab 7 (查看各圈滞回环) ---------------------------------------------------
 
     def tab7_start(self):
         self.ui.comboBox.clear()
@@ -972,7 +974,7 @@ class MainWin(QMainWindow):
         self.pg12.clear()
         self.MyDel('self.current_idx')
 
-    # -------------------------------------------------- tab 7_1 --------------------------------------------------
+    # -------------------------------------------------- tab 7_1 (骨架曲线&退化曲线) --------------------------------------------------
 
     def tab7_1_start(self):
         pass
@@ -1159,7 +1161,7 @@ class MainWin(QMainWindow):
         self.data_strength_degradation = []
         self.data_scheme = []
 
-    # --------------------------------------------------- tab 8 ---------------------------------------------------
+    # --------------------------------------------------- tab 8 (结果输出) ---------------------------------------------------
 
     def tab8_start(self):
         self.result_display()
@@ -1363,15 +1365,16 @@ class MainWin(QMainWindow):
         if not output_file:
             self.buttom_on()
             return 0
-        self.export_all_data_(output_file)
+        self._export_all_data(output_file)
         
-    def export_all_data_(self, output_file: str):
+    def _export_all_data(self, output_file: str):
         np.savetxt(f'{output_file}/滞回曲线.txt', np.column_stack((MainWin.u7_1, MainWin.F7_1)))
         np.savetxt(f'{output_file}/骨架点.txt', np.column_stack((self.gujia_u, self.gujia_F)))
         np.savetxt(f'{output_file}/单圈耗能.txt', self.Es)
         np.savetxt(f'{output_file}/累积耗能.txt', self.Ea)
         np.savetxt(f'{output_file}/等效粘滞阻尼系数.txt', self.zeta)
         np.savetxt(f'{output_file}/残余变形.txt', np.column_stack((np.arange(0, len(self.residual_pos), 1), self.residual_pos, self.residual_neg)))
+        np.savetxt(f'{output_file}/卸载点索引.txt', self.indices, fmt='%d')
         data_maxF = [max(loop) for loop in self.F_loops]
         data_minF = [min(loop) for loop in self.F_loops]
         np.savetxt(f'{output_file}/承载力.txt', np.column_stack((np.arange(0, len(data_maxF), 1), data_minF, data_maxF)))
